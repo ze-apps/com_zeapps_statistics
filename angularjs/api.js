@@ -6,8 +6,16 @@ app.config(["$provide",
             zeHttp.statistics = {
 				requetes_generees : {
 					context : context_requetes_generees,
-					get : get_requetes_generees,
+					get : get_requete_generee,
+					new : new_requete_generee,
                     contenu : contenu_requetes_generees,
+
+					modules : get_modules,
+					tables : get_tables,
+					fields : get_fields,
+
+                    selectTables : selectTables,
+
 					all : getAll_requetes_generees,
                     save : save_requetes_generees,
 					excel : {
@@ -29,14 +37,41 @@ app.config(["$provide",
             {
 				return zeHttp.get("/com_zeapps_statistics/requetes_generees/context/");
 			}
-			function get_requetes_generees(id_requete_generee)
+			function get_requete_generee(id_requete_generee)
             {
 				return zeHttp.get("/com_zeapps_statistics/requetes_generees/get/" + id_requete_generee);
 			}
+            function new_requete_generee()
+            {
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/view");
+            }
             function contenu_requetes_generees(id_requete_generee)
             {
                 return zeHttp.get("/com_zeapps_statistics/requetes_generees/contenu/" + id_requete_generee);
             }
+
+
+
+            function get_modules()
+            {
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/modules");
+            }
+            function get_tables(module)
+            {
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/tables/" + module);
+            }
+            function get_fields(module, table)
+            {
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/fields/" + module + "/" + table);
+            }
+            function selectTables(module)
+            {
+                console.log('XXX XXX XXX XXX XXX XXX');
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/fields/" + module);
+            }
+
+
+
 			function getAll_requetes_generees()
             {
 				return zeHttp.post("/com_zeapps_statistics/requetes_generees/search");

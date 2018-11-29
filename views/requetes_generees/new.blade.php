@@ -4,9 +4,9 @@
 
 <div id="content">
 
-    <!--------
-       TABLE
-     --------->
+    <!-----------
+        TABLES
+     ----------->
 
     <div class="row" style="margin-top: 10px; margin-bottom: 10px">
         <div class="col-md-12">
@@ -27,17 +27,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact</td>
-                        <td>Entreprise</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_crm</td>
-                        <td>Devis</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_crm</td>
-                        <td>Devis_ligne</td>
+                    <tr ng-repeat="ligneTable in lignesTables">
+                        <td>Donnees dynamiques à envoyer</td>
+                        <td>Donnees dynamiques à envoyer</td>
                     </tr>
                 </tbody>
             </table>
@@ -60,56 +52,7 @@
 
     <div class="row">
         <div class="col-md-12" id="divJointure">
-            <div class="row" id="jointure_1" style="margin-bottom: 10px; ">
-
-                <div class="col-md-2 col-sm-6 col-xs-12">
-                    <select class="form-control" id="tableGauche_1">
-                        <option selected>com_zeapps_crm_quotes</option>
-                        <option>com_zeapps_crm_quote_lines</option>
-                        <option>com_zeapps_contact_companies</option>
-                    </select>
-                </div>
-                <div class="col-md-2 col-sm-6 col-xs-12">
-                    <select class="form-control" id="champGauche_1">
-                        <option>id</option>
-                        <option>libelle</option>
-                        <option>numerotation</option>
-                        <option>status</option>
-                        <option>probability</option>
-                    </select>
-                </div>
-                <div class="col-md-3 col-sm-12 col-xs-12">
-                    <select class="form-control" id="operateurJointure_1">
-                        <option>INNER JOIN</option>
-                        <option>CROSS JOIN</option>
-                        <option selected>LEFT JOIN</option>
-                        <option>RIGHT JOIN</option>
-                        <option>FULL JOIN</option>
-                        <option>SELF JOIN</option>
-                        <option>NATURAL JOIN</option>
-                    </select>
-                </div>
-                <div class="col-md-2 col-sm-6 col-xs-12">
-                    <select class="form-control" id="tableDroite_1">
-                        <option>com_zeapps_crm_quotes</option>
-                        <option selected>com_zeapps_crm_quote_lines</option>
-                        <option>com_zeapps_contact_companies</option>
-                    </select>
-                </div>
-                <div class="col-md-2 col-sm-6 col-xs-12">
-                    <select class="form-control" id="champDroite_1"  >
-                        <option>id_quote</option>
-                        <option>type</option>
-                        <option>ref</option>
-                        <option>designation_title</option>
-                        <option>designation_desc</option>
-                    </select>
-                </div>
-                <div class="col-md-1 col-sm-6 col-xs-12" style="text-align: center; padding-top: 5px">
-                    <span onclick="supprimerCetteJointure(1);" class="fa fa-remove text-danger center-block" style="font-size: 25px; cursor: pointer" title="Retirer"></span>
-                </div>
-
-            </div>
+            <!-- Dynamic javascript code here -->
         </div>
     </div>
 
@@ -130,32 +73,32 @@
         <div class="col-md-12">
             <table class="table table-condensed table-responsive table-striped table-bordered">
                 <thead>
-                    <tr>
-                        <th class="col-md-6">Champs</th>
-                        <th class="col-md-6">Opération</th>
-                    </tr>
+                <tr>
+                    <th class="col-md-6">Champs</th>
+                    <th class="col-md-6">Opération</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                        <td>MIN ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                        <td>MAX ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.pays</td>
-                        <td>AVG ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_crm.Devis.numero</td>
-                        <td>SUM ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_crm.Devis.montant</td>
-                        <td>SUM ( )</td>
-                    </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.nom</td>
+                    <td>MIN ( )</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.ville</td>
+                    <td>MAX ( )</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.pays</td>
+                    <td>AVG ( )</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_crm.Devis.numero</td>
+                    <td>SUM ( )</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_crm.Devis.montant</td>
+                    <td>SUM ( )</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -178,33 +121,33 @@
         <div class="col-md-12">
             <table class="table table-condensed table-responsive table-striped table-bordered">
                 <thead>
-                    <tr>
-                        <th class="col-md-5">Champs</th>
-                        <th class="col-md-2">Opération</th>
-                        <th class="col-md-5">Valeur / intervalle</th>
-                    </tr>
+                <tr>
+                    <th class="col-md-5">Champs</th>
+                    <th class="col-md-2">Opération</th>
+                    <th class="col-md-5">Valeur / intervalle</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                        <td>IN</td>
-                        <td>(FRANCE, ITALIE, ESPAGNE)</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                        <td>IN</td>
-                        <td>(NANTES, PARIS, MARSEILLE)</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.montant</td>
-                        <td>></td>
-                        <td>1000</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.date_creation</td>
-                        <td>BETWEEN</td>
-                        <td>01/01/2018 - 31/01/2018</td>
-                    </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.nom</td>
+                    <td>IN</td>
+                    <td>(FRANCE, ITALIE, ESPAGNE)</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.ville</td>
+                    <td>IN</td>
+                    <td>(NANTES, PARIS, MARSEILLE)</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.montant</td>
+                    <td>></td>
+                    <td>1000</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.date_creation</td>
+                    <td>BETWEEN</td>
+                    <td>01/01/2018 - 31/01/2018</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -227,20 +170,20 @@
         <div class="col-md-12">
             <table class="table table-condensed table-responsive table-striped table-bordered">
                 <thead>
-                    <tr>
-                        <th>Champs</th>
-                    </tr>
+                <tr>
+                    <th>Champs</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.montant</td>
-                    </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.nom</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.ville</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.montant</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -263,26 +206,84 @@
         <div class="col-md-12">
             <table class="table table-condensed table-responsive table-striped table-bordered">
                 <thead>
-                    <tr>
-                        <th class="col-md-8">Champs</th>
-                        <th class="col-md-4">Sens</th>
-                    </tr>
+                <tr>
+                    <th class="col-md-8">Champs</th>
+                    <th class="col-md-4">Sens</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                        <td>ASC</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                        <td>ASC</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.montant</td>
-                        <td>DESC</td>
-                    </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.nom</td>
+                    <td>ASC</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.ville</td>
+                    <td>ASC</td>
+                </tr>
+                <tr>
+                    <td>com_ze_apps_contact.Entreprise.montant</td>
+                    <td>DESC</td>
+                </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!------------
+         LIMIT
+     ------------->
+
+    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+        <div class="col-md-12">
+            <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Limit
+                <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalLimit" hint="Ajouter" always-on="true"
+                        href="#modalLimit" data-toggle="modal" ></ze-btn>
+            </h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-condensed table-responsive table-striped table-bordered">
+                <thead>
+                <tr ng-repeat="limit in limits">
+                    <th class="col-md-12">Valeur</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="limit in limits">
+                    <td>1, 10</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!------------------
+         PAGINATION
+     ------------------->
+
+    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+        <div class="col-md-12">
+            <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Pagination</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-6 pull-left">
+                <input type="radio" value="non" checked id="paginationNon" name="pagination" /> <label style="margin-right: 15px" for="paginationNon">Non</label>
+                <input type="radio" value="oui" id="paginationOui" name="pagination" /> <label for="paginationOui">Oui</label>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row pull-right" style="margin-top: 10px; margin-bottom: 20px;">
+        <div class="col-md-12">
+            <button class="btn btn-danger" style="width: 150px">Annuler</button>
+            <button class="btn btn-success" style="width: 150px">Valider</button>
         </div>
     </div>
 
@@ -311,10 +312,8 @@
                                 <strong>Module</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option>com_zeapps_crm_quotes</option>
-                                    <option selected>com_zeapps_crm_quote_lines</option>
-                                    <option>com_zeapps_contact_companies</option>
+                                <select id="selectModule" class="form-control" ng-options="module for module in modules" ng-model="module" ng-change="loadTables(module)">
+                                    <option value="">-- sélectionnez un module --</option>
                                 </select>
                             </div>
                         </div>
@@ -324,10 +323,8 @@
                                 <strong>Table</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option>Entreprise</option>
-                                    <option selected>Devis</option>
-                                    <option>Devis_ligne</option>
+                                <select id="selectTable" class="form-control" ng-options="table.label for table in tables" ng-model="table">
+                                    <option value="">-- sélectonner une table --</option>
                                 </select>
                             </div>
                         </div>
@@ -338,7 +335,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Valider</button>
+                    <button type="button" class="btn btn-success" id="btnValidate" ng-click="updateTables()" >Valider</button>
                 </div>
 
             </div>
@@ -623,31 +620,105 @@
 
     </div>
 
+    <div class="modal" id="modalLimit" tabindex="-1" role="dialog">
+
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <div id="breadcrumb">
+                        Nouvelle limite
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-12" style="margin-bottom: 10px">
+                            <div class="col-md-4" style="padding-top: 7px">
+                                <strong>Valeur</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" value="" required placeholder="Ex : 5, 10" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success">Valider</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
     <!---------------
         JAVASCRIPT
      ---------------->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
 
     <script type="text/javascript">
 
+        var nbJointures = 0;
         function supprimerCetteJointure(id_span_jointure) {
             $('div#jointure_'+id_span_jointure).remove();
-            if (nbJointures>=1) {
+            if (nbJointures >= 1) {
                 nbJointures--;
             }
         }
 
-        var nbJointures = 1;
-
         $(document).ready(function() {
 
             $(this).on("click", ".open-modalTable", function () {
+
+                // Validation of 2 selects
+                $('#btnValidate').click(function() {
+                    if ($( "#selectModule option:selected" ).val() == '' || $( "#selectTable option:selected" ).val() == '') {
+
+                        if ($( "#selectModule option:selected" ).val() == '') {
+                            $( "#selectModule" ).attr('style', 'border: 1px solid red');
+                        } else {
+                            $( "#selectModule" ).attr('style', 'border: 1px solid #ccc');
+                        }
+
+                        if ($( "#selectTable option:selected" ).val() == '') {
+                            $( "#selectTable" ).attr('style', 'border: 1px solid red');
+                        } else {
+                            $( "#selectTable" ).attr('style', 'border: 1px solid #ccc');
+                        }
+
+                        return false;
+                    } else {
+
+                        $( "#selectModule" ).attr('style', 'border: 1px solid #ccc');
+                        $( "#selectTable" ).attr('style', 'border: 1px solid #ccc');
+
+                        // Valoriser ng-click
+                        var module = $("#selectModule option:selected").val();
+                        var table = $("#selectTable option:selected").val();
+
+                        $('#btnValidate').attr('ng-click', 'updateTables('+module+', '+table+')');
+
+                        return true;
+                    }
+                });
 
             });
 
             $('#ajoutJointure').click(function () {
                 nbJointures++;
                 $('div#divJointure').append('<div class="row" id="jointure_'+nbJointures+'" style="margin-bottom: 10px; ">\n' +
-                    '\n' +
                     '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
                     '                    <select class="form-control" id="tableGauche_'+nbJointures+'">\n' +
                     '                        <option selected>com_zeapps_crm_quotes</option>\n' +
@@ -694,7 +765,6 @@
                     '                <div class="col-md-1 col-sm-6 col-xs-12" style="text-align: center; padding-top: 5px">\n' +
                     '                    <span onclick="supprimerCetteJointure('+nbJointures+');" class="fa fa-remove text-danger center-block" style="font-size: 25px; cursor: pointer" title="Retirer"></span>\n' +
                     '                </div>\n' +
-                    '\n' +
                     '            </div>');
 
             });

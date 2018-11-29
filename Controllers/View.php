@@ -21,10 +21,16 @@ class View extends Controller
         return view("requetes_generees/search", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
     }
 
-    public function requeteGenereeRequeteur()
+    public function requeteGenereeView()
     {
         $data = array();
-        return view("requetes_generees/requeteur", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
+        return view("requetes_generees/view", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
+    }
+
+    public function requeteGenereeNew()
+    {
+        $data = array();
+        return view("requetes_generees/new", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
     }
 
     public function requetesGenereesFormModalTraitement()

@@ -7,7 +7,7 @@ use App\com_zeapps_statistics\Models\Note;
 use App\com_zeapps_statistics\Models\Status;
 use Zeapps\Core\Controller;
 use Zeapps\Core\Request;
-use App\com_zeapps_statistics\Models\RequetesGenerees as ReqGenModel;
+use App\com_zeapps_statistics\Models\RequeteGeneree as ReqGenModel;
 use Zeapps\libraries\PHPExcel;
 
 use Zeapps\Core\ModelRequest;
@@ -305,7 +305,9 @@ class RequetesGenerees extends Controller
             $json[] = $module;
         }
 
-        echo json_encode($json);
+        echo json_encode(array(
+            'modules' => $json
+        ));
     }
 
     public function getTables(Request $request)
@@ -326,7 +328,9 @@ class RequetesGenerees extends Controller
             }
         }
 
-        echo json_encode($json);
+        echo json_encode(array(
+            'tables' => $json
+        ));
     }
 
     public function getFields(Request $request)
@@ -354,4 +358,4 @@ class RequetesGenerees extends Controller
 
         echo json_encode($json);
     }
-}
+};
