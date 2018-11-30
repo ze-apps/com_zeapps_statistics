@@ -313,6 +313,7 @@ class RequetesGenerees extends Controller
     public function getTables(Request $request)
     {
         $argModule = $request->input('argModule', "");
+        $withFields = $request->input('argWithFields', false);
 
         $tabModel = ModelRequest::getRequestContent();
 
@@ -323,7 +324,11 @@ class RequetesGenerees extends Controller
                 $tables = $dataModule["tables"];
 
                 foreach ($tables as $table) {
-                    $json[] = array("sqlName" => $table->table, "label" => $table->tableLabel);
+                    if ($withFields == true) {
+                        $json[] = array("sqlName" => $table->table, "label" => $table->tableLabel, "fields" => array_keys($table->fields));
+                    } else {
+                        $json[] = array("sqlName" => $table->table, "label" => $table->tableLabel);
+                    }
                 }
             }
         }
@@ -356,6 +361,8 @@ class RequetesGenerees extends Controller
             }
         }
 
-        echo json_encode($json);
+        echo json_encode(array(
+            'fields' => $json
+        ));
     }
 };

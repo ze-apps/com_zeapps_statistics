@@ -19,7 +19,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-condensed table-responsive table-striped table-bordered">
+            <table id="tblTables" class="table table-condensed table-responsive table-striped table-bordered">
                 <thead>
                     <tr>
                         <th class="col-md-6">Module</th>
@@ -27,10 +27,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="ligneTable in lignesTables">
-                        <td>Donnees dynamiques à envoyer</td>
-                        <td>Donnees dynamiques à envoyer</td>
-                    </tr>
+
                 </tbody>
             </table>
         </div>
@@ -44,7 +41,7 @@
         <div class="col-md-12">
             <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Jointure(s)
                 <div class="pull-right">
-                    <ze-btn id="ajoutJointure" fa="plus" color="success" hint="Ajouter" always-on="true"></ze-btn>
+                    <ze-btn id="ajoutJointure" fa="plus"  color="success" hint="Ajouter" always-on="true"></ze-btn>
                 </div>
             </h4>
         </div>
@@ -300,7 +297,7 @@
                         Nouvelle table
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button></h4>
+                        </button>
                     </div>
                 </div>
                 <div class="modal-body">
@@ -323,8 +320,8 @@
                                 <strong>Table</strong>
                             </div>
                             <div class="col-md-8">
-                                <select id="selectTable" class="form-control" ng-options="table.label for table in tables" ng-model="table">
-                                    <option value="">-- sélectonner une table --</option>
+                                <select id="selectTable" class="form-control" ng-options="table.sqlName as table.sqlName for table in tables" ng-model="table" ng-value="@{{table.fields}}" >
+                                    <option value="">-- sélectonnez une table --</option>
                                 </select>
                             </div>
                         </div>
@@ -335,7 +332,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" id="btnValidate" ng-click="updateTables()" >Valider</button>
+                    <button type="button" class="btn btn-success" id="btnAddTables" >Valider</button>
                 </div>
 
             </div>
@@ -671,19 +668,37 @@
     <script type="text/javascript">
 
         var nbJointures = 0;
-        function supprimerCetteJointure(id_span_jointure) {
+        var tables = [];
+
+        function supprimerCetteJointure(id_span_jointure)
+        {
             $('div#jointure_'+id_span_jointure).remove();
             if (nbJointures >= 1) {
                 nbJointures--;
             }
         }
 
+        // Tables currently added
+        function getOptionsSelectsTables()
+        {
+            var html_tables = '';
+            tables.forEach(function (elem) {
+                html_tables += '<option>' + elem + '</option>';
+            });
+            return html_tables;
+        }
+
         $(document).ready(function() {
+
+            console.log($('#selectTable').attr('name'));
 
             $(this).on("click", ".open-modalTable", function () {
 
                 // Validation of 2 selects
-                $('#btnValidate').click(function() {
+                $('#btnAddTables').click(function(e) {
+
+                    e.preventDefault();
+
                     if ($( "#selectModule option:selected" ).val() == '' || $( "#selectTable option:selected" ).val() == '') {
 
                         if ($( "#selectModule option:selected" ).val() == '') {
@@ -699,73 +714,97 @@
                         }
 
                         return false;
+
                     } else {
 
                         $( "#selectModule" ).attr('style', 'border: 1px solid #ccc');
                         $( "#selectTable" ).attr('style', 'border: 1px solid #ccc');
 
-                        // Valoriser ng-click
+                        // Add tables and modules to current page (DOM only)
                         var module = $("#selectModule option:selected").val();
                         var table = $("#selectTable option:selected").val();
 
-                        $('#btnValidate').attr('ng-click', 'updateTables('+module+', '+table+')');
+                        // Supprimer 'string:'
+                        module = module.replace('string:', '');
+                        table = table.replace('string:', '');
+
+                        // Close modal and append data
+                        $('#modalTable').modal('hide');
+
+                        if ($('table#tblTables tbody').html().indexOf('<tr><td>' + module + '</td><td>' + table + '</td></tr>') == -1) {
+                            $('table#tblTables tbody').append('<tr><td>' + module + '</td><td>' + table + '</td></tr>');
+                            tables.push(table);
+                            var options = getOptionsSelectsTables();
+
+                            for(var i=1; i<=nbJointures; i++) {
+                                $('#tableGauche_'+i).empty();
+                                $('#tableDroite_'+i).empty();
+                                $('#tableGauche_'+i).append(options);
+                                $('#tableDroite_'+i).append(options);
+                            }
+                        }
 
                         return true;
                     }
+
                 });
 
             });
 
             $('#ajoutJointure').click(function () {
-                nbJointures++;
-                $('div#divJointure').append('<div class="row" id="jointure_'+nbJointures+'" style="margin-bottom: 10px; ">\n' +
-                    '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
-                    '                    <select class="form-control" id="tableGauche_'+nbJointures+'">\n' +
-                    '                        <option selected>com_zeapps_crm_quotes</option>\n' +
-                    '                        <option>com_zeapps_crm_quote_lines</option>\n' +
-                    '                        <option>com_zeapps_contact_companies</option>\n' +
-                    '                    </select>\n' +
-                    '                </div>\n' +
-                    '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
-                    '                    <select class="form-control" id="champGauche_'+nbJointures+'">\n' +
-                    '                        <option>id</option>\n' +
-                    '                        <option>libelle</option>\n' +
-                    '                        <option>numerotation</option>\n' +
-                    '                        <option>status</option>\n' +
-                    '                        <option>probability</option>\n' +
-                    '                    </select>\n' +
-                    '                </div>\n' +
-                    '                <div class="col-md-3 col-sm-12 col-xs-12">\n' +
-                    '                    <select class="form-control" id="operateurJointure_'+nbJointures+'">\n' +
-                    '                        <option>INNER JOIN</option>\n' +
-                    '                        <option>CROSS JOIN</option>\n' +
-                    '                        <option selected>LEFT JOIN</option>\n' +
-                    '                        <option>RIGHT JOIN</option>\n' +
-                    '                        <option>FULL JOIN</option>\n' +
-                    '                        <option>SELF JOIN</option>\n' +
-                    '                        <option>NATURAL JOIN</option>\n' +
-                    '                    </select>\n' +
-                    '                </div>\n' +
-                    '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
-                    '                    <select class="form-control" id="tableDroite_'+nbJointures+'">\n' +
-                    '                        <option>com_zeapps_crm_quotes</option>\n' +
-                    '                        <option selected>com_zeapps_crm_quote_lines</option>\n' +
-                    '                        <option>com_zeapps_contact_companies</option>\n' +
-                    '                    </select>\n' +
-                    '                </div>\n' +
-                    '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
-                    '                    <select class="form-control" id="champDroite_'+nbJointures+'"  >\n' +
-                    '                        <option>id_quote</option>\n' +
-                    '                        <option>type</option>\n' +
-                    '                        <option>ref</option>\n' +
-                    '                        <option>designation_title</option>\n' +
-                    '                        <option>designation_desc</option>\n' +
-                    '                    </select>\n' +
-                    '                </div>\n' +
-                    '                <div class="col-md-1 col-sm-6 col-xs-12" style="text-align: center; padding-top: 5px">\n' +
-                    '                    <span onclick="supprimerCetteJointure('+nbJointures+');" class="fa fa-remove text-danger center-block" style="font-size: 25px; cursor: pointer" title="Retirer"></span>\n' +
-                    '                </div>\n' +
-                    '            </div>');
+
+                if (tables.length > 0) {
+
+                    nbJointures++;
+
+                    $('div#divJointure').append('<div class="row" id="jointure_' + nbJointures + '" style="margin-bottom: 10px; ">\n' +
+                        '                <div class="col-md-3 col-sm-6 col-xs-12">\n' +
+                        '                    <select ng-model="table" class="form-control" id="tableGauche_' + nbJointures + '">\n' +
+                        '                        <option value="">-- sélectonnez une table --</option>\n' +
+                                                 getOptionsSelectsTables() +
+                        '                    </select>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
+                        '                    <select ng-model="module" class="form-control" id="champGauche_' + nbJointures + '">\n' +
+                        '                    </select>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-md-1 col-sm-12 col-xs-12" style="padding: 0" >\n' +
+                        '                    <select class="form-control" id="operateurJointure_' + nbJointures + '">\n' +
+                        '                        <option>INNER JOIN</option>\n' +
+                        '                        <option>CROSS JOIN</option>\n' +
+                        '                        <option selected>LEFT JOIN</option>\n' +
+                        '                        <option>RIGHT JOIN</option>\n' +
+                        '                        <option>FULL JOIN</option>\n' +
+                        '                        <option>SELF JOIN</option>\n' +
+                        '                    </select>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-md-3 col-sm-6 col-xs-12">\n' +
+                        '                    <select class="form-control" id="tableDroite_' + nbJointures + '">\n' +
+                        '                        <option value="">-- sélectonnez une table --</option>\n' +
+                                                 getOptionsSelectsTables() +
+                        '                    </select>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-md-2 col-sm-6 col-xs-12">\n' +
+                        '                    <select class="form-control" id="champDroite_' + nbJointures + '"  >\n' +
+                        '                    </select>\n' +
+                        '                </div>\n' +
+                        '                <div class="col-md-1 col-sm-6 col-xs-12" style="text-align: center; padding-top: 5px">\n' +
+                        '                    <span onclick="supprimerCetteJointure(' + nbJointures + ');" class="fa fa-remove text-danger center-block" style="font-size: 25px; cursor: pointer" title="Retirer"></span>\n' +
+                        '                </div>\n' +
+                        '            </div>');
+
+                    $('#tableGauche_' + nbJointures).change(function() {
+                        if ($(this).find(':selected').val() != '') {
+
+                        }
+                    });
+
+
+                } else {
+
+                    alert('Vous devez ajouter au moins 2 tables pour ajouter une jointure.')
+
+                }
 
             });
 
