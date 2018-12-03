@@ -71,7 +71,6 @@ app.config(["$provide",
             }
             function selectTables(module)
             {
-                console.log('XXX XXX XXX XXX XXX XXX');
                 return zeHttp.get("/com_zeapps_statistics/requetes_generees/fields/" + module);
             }
 
