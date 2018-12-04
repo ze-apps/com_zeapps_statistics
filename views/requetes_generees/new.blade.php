@@ -4,9 +4,9 @@
 
 <div id="content">
 
-    <!-----------
-        TABLES
-     ----------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                    TABLES
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div class="row" style="margin-top: 10px; margin-bottom: 10px">
         <div class="col-md-12">
@@ -27,18 +27,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="table in tables">
-                    <td>@{{ table.module }}</td>
-                    <td>@{{ table.table }}</td>
-                </tr>
+                    <tr ng-repeat="table in tables">
+                        <td>@{{ table.module }}</td>
+                        <td>@{{ table.table }}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!------------
-       JOINTURE
-     ------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                    JOINTURE
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 2">
 
@@ -46,7 +46,7 @@
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Jointure(s)
                     <div class="pull-right">
-                        <button type="button" class="btn btn-success btn-xs" ng-click="addJointure()"><span class="fa fa-plus"></span> Ajouter</button>
+                        <button type="button" class="btn btn-success btn-xs" ng-click="addJointure()" style="width: 69px"><span class="fa fa-plus"></span> Ajouter</button>
                     </div>
                 </h4>
             </div>
@@ -58,15 +58,14 @@
 
                 <div class="row" style="margin-bottom: 10px;" ng-repeat="jointure in jointures">
                     <div class="col-md-3 col-sm-6 col-xs-12">
-                        <select ng-model="table1.table" class="form-control" ng-change="getFieldsOfSelectedTableLeft(table1.table)" ng-options="table1.table for table1 in tables">
-                            <option value="">-- sélectonnez une table --</option>
+                        <select ng-model="jointure.table_left" class="form-control" ng-change="getFieldsOfSelectedTableLeft(jointure.table_left)" ng-options="table.table for table in tables">
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-6 col-xs-12">
-                        <select ng-model="field1.name" class="form-control" ng-options="field1.name for field1 in fieldsLeft" >
-                            <option value="">-- sélectonnez un champ --</option>
+                        <select ng-model="jointure.field_left" class="form-control" ng-options="field_left.name for field_left in fieldsLeft">
                         </select>
                     </div>
+
                     <div class="col-md-1 col-sm-12 col-xs-12" style="padding: 0" >
                         <select class="form-control" id="operateurJointure_' + nbJointures + '">
                             <option>INNER JOIN</option>
@@ -77,14 +76,13 @@
                             <option>SELF JOIN</option>
                         </select>
                     </div>
+
                     <div class="col-md-3 col-sm-6 col-xs-12">
-                        <select ng-model="table2.table" class="form-control" ng-change="getFieldsOfSelectedTableRight(table2.table)" ng-options="table2.table for table2 in tables">
-                            <option value="">-- sélectonnez une table --</option>
+                        <select ng-model="jointure.table_right" class="form-control" ng-change="getFieldsOfSelectedTableRight(jointure.table_right)" ng-options="table.table for table in tables">
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-6 col-xs-12">
-                        <select ng-model="field2.name" class="form-control" ng-options="field2.name for field2 in fieldsRight" >
-                            <option value="">-- sélectonnez un champ --</option>
+                        <select ng-model="jointure.field_right" class="form-control" ng-options="field_right.name for field_right in fieldsRight">
                         </select>
                     </div>
                     <div class="col-md-1 col-sm-6 col-xs-12" style="text-align: center; padding-top: 5px">
@@ -96,9 +94,9 @@
         </div>
     </div>
 
-    <!------------
-       AFFICHAGE
-     ------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                    AFFICHAGE
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
@@ -114,41 +112,25 @@
             <div class="col-md-12">
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
-                    <tr>
-                        <th class="col-md-6">Champs</th>
-                        <th class="col-md-6">Opération</th>
-                    </tr>
+                        <tr>
+                            <th class="col-md-6">Champs</th>
+                            <th class="col-md-6">Opération</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                        <td>MIN ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                        <td>MAX ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.pays</td>
-                        <td>AVG ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_crm.Devis.numero</td>
-                        <td>SUM ( )</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_crm.Devis.montant</td>
-                        <td>SUM ( )</td>
-                    </tr>
+                        <tr ng-repeat="affichage in affichages">
+                            <td>@{{ affichage.field }}</td>
+                            <td>@{{ affichage.operation }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!--------------
-       CONDITION(S)
-     --------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                    CONDITION(S)
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
@@ -164,42 +146,27 @@
             <div class="col-md-12">
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
-                    <tr>
-                        <th class="col-md-5">Champs</th>
-                        <th class="col-md-2">Opération</th>
-                        <th class="col-md-5">Valeur / intervalle</th>
-                    </tr>
+                        <tr>
+                            <th class="col-md-5">Champs</th>
+                            <th class="col-md-2">Opération</th>
+                            <th class="col-md-5">Valeur / intervalle</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                        <td>IN</td>
-                        <td>(FRANCE, ITALIE, ESPAGNE)</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                        <td>IN</td>
-                        <td>(NANTES, PARIS, MARSEILLE)</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.montant</td>
-                        <td>></td>
-                        <td>1000</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.date_creation</td>
-                        <td>BETWEEN</td>
-                        <td>01/01/2018 - 31/01/2018</td>
-                    </tr>
+                        <tr ng-repeat="condition in conditions">
+                            <td>@{{ condition.field }}</td>
+                            <td>@{{ condition.operation }}</td>
+                            <td>@{{ condition.value }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!--------------
-       Groupé par
-     --------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                    Groupé par
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
@@ -215,29 +182,23 @@
             <div class="col-md-12">
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
-                    <tr>
-                        <th>Champs</th>
-                    </tr>
+                        <tr>
+                            <th>Champs</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.montant</td>
-                    </tr>
+                        <tr ng-repeat="group in groupsBy">
+                            <td>@{{ group.field }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!--------------
-       Ordonné par
-     --------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                    Ordonné par
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
@@ -253,33 +214,33 @@
             <div class="col-md-12">
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
-                    <tr>
-                        <th class="col-md-8">Champs</th>
-                        <th class="col-md-4">Sens</th>
-                    </tr>
+                        <tr>
+                            <th class="col-md-8">Champs</th>
+                            <th class="col-md-4">Sens</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.nom</td>
-                        <td>ASC</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.ville</td>
-                        <td>ASC</td>
-                    </tr>
-                    <tr>
-                        <td>com_ze_apps_contact.Entreprise.montant</td>
-                        <td>DESC</td>
-                    </tr>
+                        <tr>
+                            <td>com_ze_apps_contact.Entreprise.nom</td>
+                            <td>ASC</td>
+                        </tr>
+                        <tr>
+                            <td>com_ze_apps_contact.Entreprise.ville</td>
+                            <td>ASC</td>
+                        </tr>
+                        <tr>
+                            <td>com_ze_apps_contact.Entreprise.montant</td>
+                            <td>DESC</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!------------
-         LIMIT
-     ------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                      LIMIT
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
@@ -309,10 +270,9 @@
         </div>
     </div>
 
-
-    <!------------------
-         PAGINATION
-     ------------------->
+    <!-------------------------------------------------------------------------------------------------------------------------------------------
+                                                                   PAGINATION
+     -------------------------------------------------------------------------------------------------------------------------------------------->
 
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
@@ -340,9 +300,9 @@
     </div>
 
 
-    <!-- **************************************************************************
-                                        MODALS
-     ************************************************************************** -->
+    <!-- ****************************************************************************************************************************************
+                                                                    MODALS
+     **************************************************************************************************************************************** -->
 
     <div class="modal" id="modalTable" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
@@ -365,7 +325,7 @@
                             </div>
                             <div class="col-md-8">
                                 <select id="selectModule" ng-class="moduleModelAddTable==null||moduleModelAddTable==''?'errorSelect form-control':'form-control'" ng-options="module for module in moduleTables" ng-model="moduleModelAddTable" ng-change="loadTables(moduleModelAddTable)">
-                                    <option value="">-- Sélectionner le module --</option>
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -376,7 +336,7 @@
                             </div>
                             <div class="col-md-8">
                                 <select id="selectTable" ng-class="tableModalAddTable==null||tableModalAddTable==''?'errorSelect form-control':'form-control'" ng-options="table.sqlName as table.sqlName for table in tablesToAdd" ng-model="tableModalAddTable" >
-                                    <option value="">-- Sélectionner la table --</option>
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -393,6 +353,8 @@
             </div>
         </div>
     </div>
+
+    <!-- *************************************************************************** -->
 
     <div class="modal" id="modalAffichage" tabindex="-1" role="dialog">
 
@@ -418,9 +380,8 @@
                                 <strong>Table</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option selected>com_zeapps_contact.Entreprise</option>
-                                    <option>com_zeapps_contact.Devis</option>
+                                <select ng-class="tableModelAddField==null||tableModelAddField==''?'errorSelect form-control':'form-control'" ng-options="table.table for table in tables" ng-model="tableModelAddField" ng-change="loadFields(tableModelAddField)">
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -430,10 +391,8 @@
                                 <strong>Champ</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option selected>com_zeapps_contact.Entreprise.nom</option>
-                                    <option>com_zeapps_contact.Entreprise.ville</option>
-                                    <option>com_zeapps_contact.Entreprise.pays</option>
+                                <select ng-class="fieldModelAddField==null||fieldModelAddField==''?'errorSelect form-control':'form-control'" ng-options="field.name as field.name for field in fieldsToAdd" ng-model="fieldModelAddField" >
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -443,14 +402,16 @@
                                 <strong>Opération</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option selected>Aucune opération</option>
+
+                                <select class="form-control" ng-model="operationModalAddField" >
+                                    <option value="">-- Aucune --</option>
                                     <option>COUNT ( )</option>
                                     <option>MIN ( )</option>
                                     <option>MAX ( )</option>
                                     <option>SUM ( )</option>
                                     <option>AVG ( )</option>
                                 </select>
+
                             </div>
                         </div>
 
@@ -460,7 +421,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="addAffichage()">Valider</button>
                 </div>
 
             </div>
@@ -468,6 +429,8 @@
         </div>
 
     </div>
+
+    <!-- *************************************************************************** -->
 
     <div class="modal" id="modalCondition" tabindex="-1" role="dialog">
 
@@ -493,9 +456,8 @@
                                 <strong>Table</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option>com_zeapps_contact.Entreprise</option>
-                                    <option selected>com_zeapps_contact.Devis</option>
+                                <select ng-class="tableModelAddCondition==null||tableModelAddCondition==''?'errorSelect form-control':'form-control'" ng-options="table.table for table in tables" ng-model="tableModelAddCondition" ng-change="loadFields(tableModelAddCondition)">
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -505,11 +467,8 @@
                                 <strong>Champ</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option selected>com_zeapps_crm.Devis.designation</option>
-                                    <option selected>com_zeapps_crm.Devis.numero</option>
-                                    <option>com_zeapps_crm.Devis.total_ht</option>
-                                    <option>com_zeapps_crm.Devis.total_ttc</option>
+                                <select ng-class="fieldModelAddCondition==null||fieldModelAddCondition==''?'errorSelect form-control':'form-control'" ng-options="field.name as field.name for field in fieldsToAdd" ng-model="fieldModelAddCondition" >
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -519,7 +478,8 @@
                                 <strong>Opération</strong>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control">
+                                <select ng-class="operationModalAddCondition==null||operationModalAddCondition==''?'errorSelect form-control':'form-control'" class="form-control" ng-model="operationModalAddCondition">
+                                    <option value="">-- Choisir --</option>
                                     <option>=</option>
                                     <option>></option>
                                     <option><</option>
@@ -539,7 +499,7 @@
                                 <strong>Valeur / Intervalle</strong>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" value="" required />
+                                <input ng-class="valueModalAddCondition==null||valueModalAddCondition==''?'errorSelect form-control':'form-control'" type="text" class="form-control" value="" ng-model="valueModalAddCondition" required />
                             </div>
                         </div>
 
@@ -549,7 +509,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="addCondition()">Valider</button>
                 </div>
 
             </div>
@@ -557,6 +517,8 @@
         </div>
 
     </div>
+
+    <!-- *************************************************************************** -->
 
     <div class="modal" id="modalGroupePar" tabindex="-1" role="dialog">
 
@@ -578,17 +540,12 @@
                     <div class="row">
 
                         <div class="col-md-12" style="margin-bottom: 10px">
-
                             <div class="col-md-4" style="padding-top: 7px">
                                 <strong>Champ</strong>
                             </div>
-
                             <div class="col-md-8">
-                                <select class="form-control">
-                                    <option>com_zeapps_contact.Entreprise.pays</option>
-                                    <option selected>com_zeapps_crm.Devis.numero</option>
-                                    <option>com_zeapps_crm.Devis.montant</option>
-                                    <option>com_ze_apps_contact.Entreprise.date_creation</option>
+                                <select ng-class="fieldModelAddGroupBy==null||fieldModelAddGroupBy==''?'errorSelect form-control':'form-control'" ng-options="field.name as field.name for field in fieldsToAdd" ng-model="fieldModelAddGroupBy" >
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
@@ -599,7 +556,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="addGroupBy()">Valider</button>
                 </div>
 
             </div>
@@ -607,6 +564,8 @@
         </div>
 
     </div>
+
+    <!-- *************************************************************************** -->
 
     <div class="modal" id="modalOrdonnePar" tabindex="-1" role="dialog">
 
@@ -671,6 +630,8 @@
         </div>
 
     </div>
+
+    <!-- *************************************************************************** -->
 
     <div class="modal" id="modalLimit" tabindex="-1" role="dialog">
 
