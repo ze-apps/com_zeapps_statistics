@@ -80,9 +80,9 @@ app.config(["$provide",
             {
 				return zeHttp.post("/com_zeapps_statistics/requetes_generees/search");
 			}
-            function save_requetes_generees()
+            function save_requetes_generees(data)
             {
-                return zeHttp.post("/com_zeapps_statistics/requetes_generees/save");
+                return zeHttp.post("/com_zeapps_statistics/requetes_generees/save", data);
             }
             function makeExcel_requetes_generees(filters)
             {

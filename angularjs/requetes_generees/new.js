@@ -12,6 +12,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
         $scope.loadTables = loadTables;
         $scope.loadFields = loadFields;
 
+        $scope.saveRequest = saveRequest;
 
         // private variables
         $scope.moduleTables = [] ;
@@ -26,14 +27,18 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
         $scope.fieldModelAddCondition = null;
         $scope.operationModalAddCondition = null;
 
-
         // default variables to load from Database
         $scope.tables = [] ;
         $scope.jointures = [] ;
         $scope.fields = [] ;
         $scope.affichages = [] ;
         $scope.conditions = [] ;
+        $scope.limits = [] ;
+
         $scope.groupsBy = [] ;
+        $scope.ordersBy = [] ;
+
+        $scope.fieldsGroupAndOrderBy = [] ;
 
         // Function implementations =>  Get data from backend controller
         function loadModules()
@@ -116,16 +121,37 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
 
                 // test si la table est déjà présente
                 var possibleAjout = true;
+
                 for (var i = 0; i < $scope.affichages.length; i++) {
 
-                    if ($scope.affichages[i].field == $scope.fieldModelAddField && $scope.affichages[i].operation == $scope.operationModalAddField) {
+                    if ($scope.affichages[i].field == $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField &&
+                        $scope.affichages[i].operation == $scope.operationModalAddField) {
+
                         possibleAjout = false ;
                         break;
                     }
                 }
 
                 if (possibleAjout) {
-                    $scope.affichages.push({field: $scope.fieldModelAddField, operation: $scope.operationModalAddField});
+
+                    $scope.affichages.push({field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField, operation: $scope.operationModalAddField});
+
+                    // Update list of group by
+                    for(var j=0; j < $scope.affichages.length; j++) {
+
+                        var insere = true;
+                        for(k in $scope.fieldsGroupAndOrderBy) {
+                            if ($scope.fieldsGroupAndOrderBy[k].field  === $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField) {
+
+                                insere = false;
+                                break;
+                            }
+                        }
+
+                        if (insere) {
+                            $scope.fieldsGroupAndOrderBy.push({ field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField });
+                        }
+                    }
                 }
 
                 return true;
@@ -144,14 +170,14 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                 var possibleAjout = true;
                 for (var i = 0; i < $scope.conditions.length; i++) {
 
-                    if ($scope.conditions[i].field == $scope.fieldModelAddCondition && $scope.conditions[i].operation == $scope.operationModalAddCondition) {
+                    if ($scope.conditions[i].field == $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition && $scope.conditions[i].operation == $scope.operationModalAddCondition) {
                         possibleAjout = false ;
                         break;
                     }
                 }
 
                 if (possibleAjout) {
-                    $scope.conditions.push({field: $scope.fieldModelAddCondition, operation: $scope.operationModalAddCondition, value: $scope.valueModalAddCondition});
+                    $scope.conditions.push({field: $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition, operation: $scope.operationModalAddCondition, value: $scope.valueModalAddCondition});
                 }
 
                 return true;
@@ -160,25 +186,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
 
         $scope.addGroupBy = function () {
 
-            /*console.log($scope.affichages);
-            return false;*/
-
-            var arrFields = [] ;
-
-            for(var j=0; j<$scope.affichages.length; j++) {
-                if (jQuery.inArray($scope.affichages[j].field, arrFields) !== -1) {
-                    arrFields.push($scope.affichages[j].field);
-                }
-            }
-
-            console.log(arrFields);
-
-            return false;
-
-
-
-
-            if ($scope.fieldModelAddGroupBy && $scope.fieldModelAddGroupBy != '' && $scope.fieldModelAddGroupBy == 'email') {
+            if ($scope.fieldModelAddGroupBy && $scope.fieldModelAddGroupBy != '') {
 
                 // Close modal and append data
                 $('#modalGroupePar').modal('hide');
@@ -201,31 +209,95 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
             }
         };
 
+        $scope.addOrderBy = function () {
+
+            if ($scope.fieldModelAddOrderBy && $scope.fieldModelAddOrderBy != '' && $scope.fieldSensAddOrderBy && $scope.fieldSensAddOrderBy != '') {
+
+                // Close modal and append data
+                $('#modalOrdonnePar').modal('hide');
+
+                // test si la table est déjà présente
+                var possibleAjout = true;
+                for (var i = 0; i < $scope.ordersBy.length; i++) {
+
+                    if ($scope.ordersBy[i].field == $scope.fieldModelAddOrderBy) {
+                        possibleAjout = false ;
+                        break;
+                    }
+                }
+
+                if (possibleAjout) {
+                    $scope.ordersBy.push({field: $scope.fieldModelAddOrderBy, sens: $scope.fieldSensAddOrderBy});
+                }
+
+                return true;
+            }
+        };
+
+        $scope.addLimit = function() {
+
+            if ($scope.valueAddLimit && $scope.valueAddLimit != '' ) {
+
+                // Close modal and append data
+                $('#modalLimit').modal('hide');
+
+                if ($scope.limits.length === 0) {
+                    $scope.limits.push($scope.valueAddLimit);
+                }
+
+                return true;
+            }
+
+        };
 
 
         $scope.addJointure = function () {
             $scope.jointures.push({table_left: '', field_left: '', operation: '', table_right: '', field_right: ''});
         };
 
+
+        // Get tables of a module
+        function saveRequest()
+        {
+            var arr_request = [] ;
+            arr_request['tables'] = [] ;
+
+            // Name of request
+            arr_request['nameRequest'] = $scope.nameRequest;
+
+            // Tables
+            if ($scope.tables.length > 0) {
+                for (var i=0; i < $scope.tables.length; i++) {
+                    arr_request['tables'].push($scope.tables[i].table);
+                }
+            }
+
+            console.log(arr_request['tables']);
+
+            arr_request['moduleTables'] = $scope.moduleTables;
+            console.warn($scope.tables);
+        }
+
+
         $scope.getFieldsOfSelectedTableLeft = getFieldsOfSelectedTableLeft;
-        function getFieldsOfSelectedTableLeft(table) {
+        function getFieldsOfSelectedTableLeft(table, jointure) {
             if (table != null) {
                 var selectedTable = table.table;
                 for(var i=0; i<$scope.fields.length; i++) {
                     if ($scope.fields[i].table == selectedTable) {
-                        $scope.fieldsLeft = $scope.fields[i].fields;
+                        jointure.fieldsLeft = $scope.fields[i].fields;
                     }
                 }
             }
         }
 
         $scope.getFieldsOfSelectedTableRight = getFieldsOfSelectedTableRight;
-        function getFieldsOfSelectedTableRight(table) {
+        function getFieldsOfSelectedTableRight(table, jointure) {
             if (table != null) {
                 var selectedTable = table.table;
                 for(var i=0; i<$scope.fields.length; i++) {
                     if ($scope.fields[i].table == selectedTable) {
-                        $scope.fieldsRight = $scope.fields[i].fields;
+                        jointure.fieldsRight = $scope.fields[i].fields;
                     }
                 }
             }

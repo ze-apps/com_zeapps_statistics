@@ -2,13 +2,11 @@
 
 namespace App\com_zeapps_statistics\Controllers;
 
-use App\com_zeapps_statistics\Models\Activity;
-use App\com_zeapps_statistics\Models\Note;
-use App\com_zeapps_statistics\Models\Status;
 use Zeapps\Core\Controller;
 use Zeapps\Core\Request;
-use App\com_zeapps_statistics\Models\RequeteGeneree as ReqGenModel;
 use Zeapps\libraries\PHPExcel;
+
+use App\com_zeapps_statistics\Models\RequeteGeneree as ReqGenModel;
 
 use Zeapps\Core\ModelRequest;
 
@@ -364,5 +362,31 @@ class RequetesGenerees extends Controller
         echo json_encode(array(
             'fields' => $json
         ));
+    }
+
+
+    public function saveRequest()
+    {
+        // constitution du tableau
+        $data = array() ;
+
+        if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') === 0 && stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== FALSE) {
+            // POST is actually in json format, do an internal translation
+            $data = json_decode(file_get_contents('php://input'), true);
+        }
+
+        $ReqGenModel = new ReqGenModel() ;
+
+        if (isset($data["id"]) && is_numeric($data["id"])) {
+            $ReqGenModel = ReqGenModel::where('id', $data["id"])->first() ;
+        }
+
+        foreach ($data as $key => $value) {
+            $ReqGenModel->$key = $value ;
+        }
+
+        $ReqGenModel->save();
+
+        echo $ReqGenModel->id;
     }
 };

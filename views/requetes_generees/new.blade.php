@@ -4,6 +4,18 @@
 
 <div id="content">
 
+    <div class="row" style="margin-bottom: 10px">
+        <div class="col-md-12">
+            <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Nom de la requête</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <input type="text" class="form-control" value="" placeholder="Nom de la requête" ng-model="nameRequest" autofocus/>
+        </div>
+    </div>
+
     <!-------------------------------------------------------------------------------------------------------------------------------------------
                                                                     TABLES
      -------------------------------------------------------------------------------------------------------------------------------------------->
@@ -58,11 +70,11 @@
 
                 <div class="row" style="margin-bottom: 10px;" ng-repeat="jointure in jointures">
                     <div class="col-md-3 col-sm-6 col-xs-12">
-                        <select ng-model="jointure.table_left" class="form-control" ng-change="getFieldsOfSelectedTableLeft(jointure.table_left)" ng-options="table.table for table in tables">
+                        <select ng-model="jointure.table_left" class="form-control" ng-change="getFieldsOfSelectedTableLeft(jointure.table_left, jointure)" ng-options="table.table for table in tables">
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-6 col-xs-12">
-                        <select ng-model="jointure.field_left" class="form-control" ng-options="field_left.name for field_left in fieldsLeft">
+                        <select ng-model="jointure.field_left" class="form-control" ng-options="field_left.name for field_left in jointure.fieldsLeft">
                         </select>
                     </div>
 
@@ -78,11 +90,11 @@
                     </div>
 
                     <div class="col-md-3 col-sm-6 col-xs-12">
-                        <select ng-model="jointure.table_right" class="form-control" ng-change="getFieldsOfSelectedTableRight(jointure.table_right)" ng-options="table.table for table in tables">
+                        <select ng-model="jointure.table_right" class="form-control" ng-change="getFieldsOfSelectedTableRight(jointure.table_right, jointure)" ng-options="table.table for table in tables">
                         </select>
                     </div>
                     <div class="col-md-2 col-sm-6 col-xs-12">
-                        <select ng-model="jointure.field_right" class="form-control" ng-options="field_right.name for field_right in fieldsRight">
+                        <select ng-model="jointure.field_right" class="form-control" ng-options="field_right.name for field_right in jointure.fieldsRight">
                         </select>
                     </div>
                     <div class="col-md-1 col-sm-6 col-xs-12" style="text-align: center; padding-top: 5px">
@@ -215,22 +227,14 @@
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th class="col-md-8">Champs</th>
-                            <th class="col-md-4">Sens</th>
+                            <th class="col-md-6">Champs</th>
+                            <th class="col-md-6">Sens</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>com_ze_apps_contact.Entreprise.nom</td>
-                            <td>ASC</td>
-                        </tr>
-                        <tr>
-                            <td>com_ze_apps_contact.Entreprise.ville</td>
-                            <td>ASC</td>
-                        </tr>
-                        <tr>
-                            <td>com_ze_apps_contact.Entreprise.montant</td>
-                            <td>DESC</td>
+                        <tr ng-repeat="order in ordersBy">
+                            <td>@{{ order.field }}</td>
+                            <td>@{{ order.sens }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -256,14 +260,14 @@
             <div class="col-md-12">
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
-                    <tr ng-repeat="limit in limits">
-                        <th class="col-md-12">Valeur</th>
-                    </tr>
+                        <tr>
+                            <th class="col-md-12">Valeur</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="limit in limits">
-                        <td>1, 10</td>
-                    </tr>
+                        <tr ng-if="limits.length == 1">
+                            <td>@{{limits[0]}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -284,8 +288,8 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="col-md-6 pull-left">
-                    <input type="radio" value="non" checked id="paginationNon" name="pagination" /> <label style="margin-right: 15px" for="paginationNon">Non</label>
-                    <input type="radio" value="oui" id="paginationOui" name="pagination" /> <label for="paginationOui">Oui</label>
+                    <input type="radio" value="non" checked id="paginationNon" name="pagination" ng-model="paginate" /> <label style="margin-right: 15px" for="paginationNon">Non</label>
+                    <input type="radio" value="oui" id="paginationOui" name="pagination" ng-model="paginate" /> <label for="paginationOui">Oui</label>
                 </div>
             </div>
         </div>
@@ -294,8 +298,8 @@
 
     <div class="row pull-right" style="margin-top: 10px; margin-bottom: 20px;">
         <div class="col-md-12">
-            <button class="btn btn-danger" style="width: 150px">Annuler</button>
-            <button class="btn btn-success" style="width: 150px">Valider</button>
+            <button class="btn btn-danger" style="width: 150px"><span class="fa fa-close"></span> Annuler</button>
+            <button class="btn btn-primary" style="width: 150px" ng-click="saveRequest()"><span class="fa fa-save"></span> Enregistrer</button>
         </div>
     </div>
 
@@ -540,11 +544,11 @@
                     <div class="row">
 
                         <div class="col-md-12" style="margin-bottom: 10px">
-                            <div class="col-md-4" style="padding-top: 7px">
+                            <div class="col-md-3" style="padding-top: 7px">
                                 <strong>Champ</strong>
                             </div>
-                            <div class="col-md-8">
-                                <select ng-class="fieldModelAddGroupBy==null||fieldModelAddGroupBy==''?'errorSelect form-control':'form-control'" ng-options="field.name as field.name for field in fieldsToAdd" ng-model="fieldModelAddGroupBy" >
+                            <div class="col-md-9">
+                                <select ng-class="fieldModelAddGroupBy==null||fieldModelAddGroupBy==''?'errorSelect form-control':'form-control'" ng-options="field.field as field.field for field in fieldsGroupAndOrderBy" ng-model="fieldModelAddGroupBy" >
                                     <option value="">-- Choisir --</option>
                                 </select>
                             </div>
@@ -588,28 +592,26 @@
 
                         <div class="col-md-12" style="margin-bottom: 10px">
 
-                            <div class="col-md-4" style="padding-top: 7px">
+                            <div class="col-md-3" style="padding-top: 7px">
                                 <strong>Champ</strong>
                             </div>
 
-                            <div class="col-md-8">
-                                <select class="form-control">
-                                    <option>com_zeapps_contact.Entreprise.pays</option>
-                                    <option selected>com_zeapps_crm.Devis.numero</option>
-                                    <option>com_zeapps_crm.Devis.montant</option>
-                                    <option>com_ze_apps_contact.Entreprise.date_creation</option>
+                            <div class="col-md-9">
+                                <select ng-class="fieldModelAddOrderBy==null||fieldModelAddOrderBy==''?'errorSelect form-control':'form-control'" ng-options="field.field as field.field for field in fieldsGroupAndOrderBy" ng-model="fieldModelAddOrderBy" >
+                                    <option value="">-- Choisir --</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="col-md-12" style="margin-bottom: 10px">
 
-                            <div class="col-md-4" style="padding-top: 7px">
+                            <div class="col-md-3" style="padding-top: 7px">
                                 <strong>Sens</strong>
                             </div>
 
-                            <div class="col-md-8">
-                                <select class="form-control">
+                            <div class="col-md-9">
+                                <select ng-class="fieldSensAddOrderBy==null||fieldSensAddOrderBy==''?'errorSelect form-control':'form-control'" ng-model="fieldSensAddOrderBy">
+                                    <option value="">-- Choisir --</option>
                                     <option selected>ASC</option>
                                     <option>DESC</option>
                                 </select>
@@ -622,7 +624,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="addOrderBy()">Valider</button>
                 </div>
 
             </div>
@@ -657,7 +659,7 @@
                                 <strong>Valeur</strong>
                             </div>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" value="" required placeholder="Ex : 5, 10" />
+                                <input type="text" class="form-control" value="" required placeholder="Ex : 5, 10" ng-class="valueAddLimit==null||valueAddLimit==''?'errorSelect form-control':'form-control'" ng-model="valueAddLimit"/>
                             </div>
                         </div>
 
@@ -667,7 +669,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="addLimit()">Valider</button>
                 </div>
 
             </div>
