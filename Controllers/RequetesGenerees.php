@@ -365,15 +365,22 @@ class RequetesGenerees extends Controller
     }
 
 
-    public function saveRequest()
+    public function save()
     {
         // constitution du tableau
         $data = array() ;
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') === 0 && stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== FALSE) {
             // POST is actually in json format, do an internal translation
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = file_get_contents('php://input');
+        } else {
+            echo '22222222222222222222';
+            exit();
         }
+
+        echo '********************\n';
+        var_dump($data);
+        exit();
 
         $ReqGenModel = new ReqGenModel() ;
 

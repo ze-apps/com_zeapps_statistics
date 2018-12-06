@@ -12,7 +12,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
         $scope.loadTables = loadTables;
         $scope.loadFields = loadFields;
 
-        $scope.saveRequest = saveRequest;
+        //$scope.saveRequest = saveRequest;
 
         // private variables
         $scope.moduleTables = [] ;
@@ -34,6 +34,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
         $scope.affichages = [] ;
         $scope.conditions = [] ;
         $scope.limits = [] ;
+        $scope.paginations = [] ;
 
         $scope.groupsBy = [] ;
         $scope.ordersBy = [] ;
@@ -102,8 +103,12 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                     zhttp.statistics.requetes_generees.fields($scope.moduleModelAddTable, $scope.tableModalAddTable).then(function (response) {
                         if (response.status === 200) {
                             $scope.fields.push({table: $scope.tableModalAddTable, fields:response.data.fields});
-                            $scope.tables.push({module: $scope.moduleModelAddTable, table: $scope.tableModalAddTable, fields: $scope.fields});
+                            $scope.tables.push({module: $scope.moduleModelAddTable, table: $scope.tableModalAddTable, fields: Object.keys(response.data.fields)});
 
+                            // Update list of folders of group by and order by
+                            Object.keys(response.data.fields).forEach(function(elem) {
+                                $scope.fieldsGroupAndOrderBy.push({field: $scope.tableModalAddTable + "." + elem});
+                            });
                         }
                     });
                 }
@@ -133,25 +138,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                 }
 
                 if (possibleAjout) {
-
                     $scope.affichages.push({field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField, operation: $scope.operationModalAddField});
-
-                    // Update list of group by
-                    for(var j=0; j < $scope.affichages.length; j++) {
-
-                        var insere = true;
-                        for(k in $scope.fieldsGroupAndOrderBy) {
-                            if ($scope.fieldsGroupAndOrderBy[k].field  === $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField) {
-
-                                insere = false;
-                                break;
-                            }
-                        }
-
-                        if (insere) {
-                            $scope.fieldsGroupAndOrderBy.push({ field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField });
-                        }
-                    }
                 }
 
                 return true;
@@ -250,20 +237,43 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
 
         };
 
+        $scope.addPagination = function () {
+
+            if ($scope.fieldModelPagination && $scope.fieldModelPagination != '') {
+
+                // Close modal and append data
+                $('#modalPagination').modal('hide');
+
+                if ($scope.paginations.length === 0) {
+                    $scope.paginations.push($scope.fieldModelPagination);
+                }
+
+                return true;
+            }
+        };
 
         $scope.addJointure = function () {
-            $scope.jointures.push({table_left: '', field_left: '', operation: '', table_right: '', field_right: ''});
+            $scope.jointures.push({table_left: '', field_left: '', type_join: '', table_right: '', field_right: ''});
         };
 
 
         // Get tables of a module
-        function saveRequest()
-        {
+        $scope.saveRequest = function() {
+
             var arr_request = [] ;
-            arr_request['tables'] = [] ;
 
             // Name of request
             arr_request['nameRequest'] = $scope.nameRequest;
+
+            // Elements of request
+            arr_request['tables'] = [] ;
+            arr_request['jointures'] = [] ;
+            arr_request['affichage'] = [] ;
+            arr_request['conditions'] = [] ;
+            arr_request['groupsby'] = [] ;
+            arr_request['ordersby'] = [] ;
+            arr_request['limit'] = [] ;
+            arr_request['pagination'] = ['non'] ;
 
             // Tables
             if ($scope.tables.length > 0) {
@@ -272,11 +282,76 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                 }
             }
 
-            console.log(arr_request['tables']);
+            // Jointures
+            if ($scope.jointures.length > 0) {
+                for (var j=0; j < $scope.jointures.length; j++) {
 
-            arr_request['moduleTables'] = $scope.moduleTables;
-            console.warn($scope.tables);
-        }
+                    // Jointure ajoutée au DOM mais au moins 1 champ non renseigné => pas de traitement
+                    if ($scope.jointures[j] != undefined && $scope.jointures[j].table_left != ''
+                        && $scope.jointures[j].field_left != '' && $scope.jointures[j].type_join != ''
+                        && $scope.jointures[j].table_right != '' && $scope.jointures[j].field_right != '') {
+
+                        var inter1 = [] ;
+
+                        inter1['table_left'] = $scope.jointures[j].table_left.table;
+                        inter1['table_right'] = $scope.jointures[j].table_right.table;
+                        inter1['type_join'] = $scope.jointures[j].type_join;
+                        inter1['field_left'] = $scope.jointures[j].field_left.name;
+                        inter1['field_right'] = $scope.jointures[j].field_right.name;
+
+                        arr_request['jointures'][j] = inter1;
+
+                    } else {
+                        alert('Au moins une jointure est non renseignée (ou incomplète).');
+                        return false;
+                    }
+                }
+            }
+
+            // Affichage
+            if ($scope.affichages.length > 0) {
+                for (var k = 0; k < $scope.affichages.length; k++) {
+                    var inter2 = [] ;
+                    inter2['field'] = $scope.affichages[k].field ;
+                    inter2['operation'] = $scope.affichages[k].operation ;
+                    arr_request['affichage'][k] = inter2;
+                }
+            }
+
+            // Conditions
+            for(var l = 0; l < $scope.conditions.length; l++) {
+                delete $scope.conditions[l]['$$hashKey'];
+            }
+            arr_request['conditions'] = $scope.conditions ;
+
+            // Group By
+            for(var m = 0; m < $scope.groupsBy.length; m++) {
+                delete $scope.groupsBy[m]['$$hashKey'];
+            }
+            arr_request['groupsby'] = $scope.groupsBy ;
+
+            // Order By
+            for(var n = 0; n < $scope.ordersBy.length; n++) {
+                delete $scope.ordersBy[n]['$$hashKey'];
+            }
+            arr_request['ordersby'] = $scope.ordersBy ;
+
+            // Limit
+            arr_request['limit'] = $scope.limits ;
+
+            // Pagination
+            if ($scope.fieldPaginatiopn !== undefined) {
+                arr_request['pagination'] = [$scope.fieldPaginatiopn];
+            }
+
+            zhttp.statistics.requetes_generees.save(arr_request).then(function (response) {
+                if (response.data && response.data !== "false") {
+                    console.log(response.data);
+                }
+            });
+
+
+        };
 
 
         $scope.getFieldsOfSelectedTableLeft = getFieldsOfSelectedTableLeft;

@@ -79,7 +79,7 @@
                     </div>
 
                     <div class="col-md-1 col-sm-12 col-xs-12" style="padding: 0" >
-                        <select class="form-control" id="operateurJointure_' + nbJointures + '">
+                        <select class="form-control" ng-model="jointure.type_join">
                             <option>INNER JOIN</option>
                             <option>CROSS JOIN</option>
                             <option selected>LEFT JOIN</option>
@@ -259,11 +259,6 @@
         <div class="row">
             <div class="col-md-12">
                 <table class="table table-condensed table-responsive table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="col-md-12">Valeur</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         <tr ng-if="limits.length == 1">
                             <td>@{{limits[0]}}</td>
@@ -281,16 +276,22 @@
     <div ng-if="tables.length >= 1">
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
-                <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Pagination</h4>
+                <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Pagination
+                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalPagination" hint="Ajouter" always-on="true"
+                            href="#modalPagination" data-toggle="modal" ></ze-btn>
+                </h4>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-12">
-                <div class="col-md-6 pull-left">
-                    <input type="radio" value="non" checked id="paginationNon" name="pagination" ng-model="paginate" /> <label style="margin-right: 15px" for="paginationNon">Non</label>
-                    <input type="radio" value="oui" id="paginationOui" name="pagination" ng-model="paginate" /> <label for="paginationOui">Oui</label>
-                </div>
+                <table class="table table-condensed table-responsive table-striped table-bordered">
+                    <tbody>
+                        <tr ng-if="paginations.length == 1">
+                            <td>@{{paginations[0]}}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -643,7 +644,7 @@
 
                 <div class="modal-header">
                     <div id="breadcrumb">
-                        Nouvelle limite
+                        Limite de sélection
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -670,6 +671,55 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
                     <button type="button" class="btn btn-success" ng-click="addLimit()">Valider</button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- *************************************************************************** -->
+
+    <div class="modal" id="modalPagination" tabindex="-1" role="dialog">
+
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <div id="breadcrumb">
+                        Pagination
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-12" style="margin-bottom: 10px">
+                            <div class="col-md-4" style="padding-top: 7px">
+                                <strong>Valeur</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <select ng-class="fieldModelPagination==null||fieldModelPagination==''?'errorSelect form-control':'form-control'" ng-model="fieldModelPagination" >
+                                    <option value="">-- Choisir --</option>
+                                    <option value="non">Non</option>
+                                    <option value="oui">Oui</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" ng-click="addPagination()">Valider</button>
                 </div>
 
             </div>
