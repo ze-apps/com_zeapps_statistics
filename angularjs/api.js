@@ -9,6 +9,7 @@ app.config(["$provide",
 					get : get_requete_generee,
 					new : new_requete_generee,
                     contenu : contenu_requetes_generees,
+                    execute : execute_requete_generee,
 
 					modules : get_modules,
 					tables : get_tables,
@@ -42,6 +43,10 @@ app.config(["$provide",
             {
 				return zeHttp.get("/com_zeapps_statistics/requetes_generees/get/" + id_requete_generee);
 			}
+            function execute_requete_generee(id_requete_generee)
+            {
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/execute/" + id_requete_generee);
+            }
             function new_requete_generee()
             {
                 return zeHttp.get("/com_zeapps_statistics/requetes_generees/view");
@@ -50,7 +55,13 @@ app.config(["$provide",
             {
                 return zeHttp.get("/com_zeapps_statistics/requetes_generees/contenu/" + id_requete_generee);
             }
-
+            function getAll_requetes_generees(limit, offset, context, filters){
+                return zeHttp.post("/com_zeapps_statistics/requetes_generees/getAll/" + limit + "/" + offset + "/" + context, filters);
+            }
+            function save_requetes_generees(data)
+            {
+                return zeHttp.post("/com_zeapps_statistics/requetes_generees/save", data);
+            }
 
 
             function get_modules()
@@ -75,15 +86,6 @@ app.config(["$provide",
             }
 
 
-
-			function getAll_requetes_generees()
-            {
-				return zeHttp.post("/com_zeapps_statistics/requetes_generees/search");
-			}
-            function save_requetes_generees(data)
-            {
-                return zeHttp.post("/com_zeapps_statistics/requetes_generees/save", data);
-            }
             function makeExcel_requetes_generees(filters)
             {
                 return zeHttp.post("/com_zeapps_statistics/requetes_generees/make_export/", filters);

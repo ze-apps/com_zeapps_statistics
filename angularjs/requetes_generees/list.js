@@ -8,39 +8,15 @@ app.controller("ComZeappsStatisticsRequestsListCtrl", ["$scope", "$location", "$
             main: [
                 {
                     format: 'input',
-                    field: 'name LIKE',
+                    field: 'nom_requete LIKE',
                     type: 'text',
                     label: 'Nom'
                 },
                 {
-                    format: 'select',
-                    field: 'id_activity',
-                    type: 'text',
-                    label: 'Activité',
-                    options: []
-                },
-                {
-                    format: 'select',
-                    field: 'id_status',
-                    type: 'text',
-                    label: 'Statut',
-                    options: []
-                }
-            ],
-            secondaries: [
-                {
                     format: 'input',
-                    field: 'name_company LIKE',
+                    field: 'contenu LIKE',
                     type: 'text',
-                    label: 'Entreprise',
-                    size: 6
-                },
-                {
-                    format: 'input',
-                    field: 'name_contact LIKE',
-                    type: 'text',
-                    label: 'Contact',
-                    size: 6
+                    label: 'Contenu'
                 }
             ]
         };
@@ -49,9 +25,13 @@ app.controller("ComZeappsStatisticsRequestsListCtrl", ["$scope", "$location", "$
         $scope.page = 1;
         $scope.pageSize = 4;
         $scope.total = 0;
-        $scope.templateForm = '/com_zeapps_statistics/requetes_generees/form_modal_traitement';
 
         $scope.loadList = loadList;
+
+        $scope.execute = execute;
+        $scope.edit = edit;
+
+
         $scope.goTo = goTo;
         $scope.getExcel = getExcel;
 
@@ -63,9 +43,8 @@ app.controller("ComZeappsStatisticsRequestsListCtrl", ["$scope", "$location", "$
             var formatted_filters = angular.toJson($scope.filter_model);
 
             zhttp.statistics.requetes_generees.all($scope.pageSize, offset, context, formatted_filters).then(function (response) {
-
                 if (response.status == 200) {
-                    $scope.requetes_generees = response.data.requetes_generees;
+                    $scope.requetesGenerees = response.data.requetes_generees;
                 }
             });
         }
@@ -73,6 +52,25 @@ app.controller("ComZeappsStatisticsRequestsListCtrl", ["$scope", "$location", "$
         function goTo(id) {
             $location.url('/ng/com_zeapps_statistics/requetes_generees/' + id);
         }
+
+
+        // Actions
+
+        function execute(requeteGeneree) {
+            var id_requete = requeteGeneree.id;
+            zhttp.statistics.requetes_generees.execute(id_requete).then(function (response) {
+                if (response.status == 200) {
+                    $scope.requeteResultats = response.data.requeteResultats;
+                    console.log($scope.requeteResultats);
+                    $location.url('/ng/com_zeapps_statistics/requetes_generees/execute/' + id_requete);
+                }
+            });
+        }
+
+        function edit(requeteGeneree) {
+            console.log(requeteGeneree);
+        }
+
 
 
         function getExcel() {

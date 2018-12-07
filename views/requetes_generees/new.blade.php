@@ -707,8 +707,8 @@
                             <div class="col-md-8">
                                 <select ng-class="fieldModelPagination==null||fieldModelPagination==''?'errorSelect form-control':'form-control'" ng-model="fieldModelPagination" >
                                     <option value="">-- Choisir --</option>
-                                    <option value="non">Non</option>
-                                    <option value="oui">Oui</option>
+                                    <option value="Non">Non</option>
+                                    <option value="Oui">Oui</option>
                                 </select>
                             </div>
                         </div>

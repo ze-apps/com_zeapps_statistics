@@ -71,7 +71,7 @@ app.controller("ComZeappsRequetesGenereesViewCtrl", ["$scope", "$routeParams", "
         }
 
         function back() {
-            $location.path("/ng/com_zeapps_contact/companies");
+            $location.path("/ng/com_zeapps_statistics/requetes_generees");
         }
 
         function initNavigation() {

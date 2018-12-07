@@ -4,15 +4,10 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
 
         menu("com_zeapps_statistics", "com_zeapps_statistics_requeteur");
 
-        // Modals
-        $scope.templateForm = '/com_zeapps_statistics/requetes_generees/form_modal_traitement';
-
         // Load all data
         $scope.loadModules = loadModules;
         $scope.loadTables = loadTables;
         $scope.loadFields = loadFields;
-
-        //$scope.saveRequest = saveRequest;
 
         // private variables
         $scope.moduleTables = [] ;
@@ -261,9 +256,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
         $scope.saveRequest = function() {
 
             var arr_request = [] ;
-
-            // Name of request
-            arr_request['nameRequest'] = $scope.nameRequest;
+            var validation = true;
 
             // Elements of request
             arr_request['tables'] = [] ;
@@ -273,13 +266,15 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
             arr_request['groupsby'] = [] ;
             arr_request['ordersby'] = [] ;
             arr_request['limit'] = [] ;
-            arr_request['pagination'] = ['non'] ;
+            arr_request['pagination'] = ['Non'] ;
 
-            // Tables
+            // Tables (obligé sinon requete invalide)
             if ($scope.tables.length > 0) {
                 for (var i=0; i < $scope.tables.length; i++) {
                     arr_request['tables'].push($scope.tables[i].table);
                 }
+            } else {
+                validation = false;
             }
 
             // Jointures
@@ -291,15 +286,13 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                         && $scope.jointures[j].field_left != '' && $scope.jointures[j].type_join != ''
                         && $scope.jointures[j].table_right != '' && $scope.jointures[j].field_right != '') {
 
-                        var inter1 = [] ;
-
-                        inter1['table_left'] = $scope.jointures[j].table_left.table;
-                        inter1['table_right'] = $scope.jointures[j].table_right.table;
-                        inter1['type_join'] = $scope.jointures[j].type_join;
-                        inter1['field_left'] = $scope.jointures[j].field_left.name;
-                        inter1['field_right'] = $scope.jointures[j].field_right.name;
-
-                        arr_request['jointures'][j] = inter1;
+                        arr_request['jointures'][j] = {
+                            'table_left': $scope.jointures[j].table_left.table,
+                            'table_right': $scope.jointures[j].table_right.table,
+                            'type_join': $scope.jointures[j].type_join,
+                            'field_left': $scope.jointures[j].field_left.name,
+                            'field_right': $scope.jointures[j].field_right.name
+                        };
 
                     } else {
                         alert('Au moins une jointure est non renseignée (ou incomplète).');
@@ -308,15 +301,13 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                 }
             }
 
-            // Affichage
+            // Affichage (Obligé sinon requete invalide)
             if ($scope.affichages.length > 0) {
-                for (var k = 0; k < $scope.affichages.length; k++) {
-                    var inter2 = [] ;
-                    inter2['field'] = $scope.affichages[k].field ;
-                    inter2['operation'] = $scope.affichages[k].operation ;
-                    arr_request['affichage'][k] = inter2;
-                }
+                arr_request['affichage'] = $scope.affichages;
+            } else {
+                validation = false;
             }
+
 
             // Conditions
             for(var l = 0; l < $scope.conditions.length; l++) {
@@ -344,12 +335,23 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                 arr_request['pagination'] = [$scope.fieldPaginatiopn];
             }
 
-            zhttp.statistics.requetes_generees.save(arr_request).then(function (response) {
-                if (response.data && response.data !== "false") {
-                    console.log(response.data);
-                }
-            });
+            var jsonObject = {
+                'nom_requete' : $scope.nameRequest,
+                'contenu' : Object.assign({}, arr_request)
+            };
 
+            if (validation) {
+                zhttp.statistics.requetes_generees.save(jsonObject).then(function (response) {
+                    if (response.data && response.data !== "false") {
+                        if (isNaN(response.data) === false && response.data > 0) {
+                            // Insert request is ok => redirect to list
+                            $location.path("/ng/com_zeapps_statistics/requetes_generees/search");
+                        }
+                    }
+                });
+            } else {
+                alert('Requête invalide, car au moins une des clauses suivantes n\'a pas été renseignée : \r\n - Table(s) \n - Affichage.');
+            }
 
         };
 

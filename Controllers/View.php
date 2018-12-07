@@ -12,7 +12,7 @@ class View extends Controller
     public function view()
     {
         $data = array();
-        return view("requetes_generees/view", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
+        return view("requetes_generees/result_request", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
     }
 
     public function requetesGenereesSearch()
@@ -31,12 +31,6 @@ class View extends Controller
     {
         $data = array();
         return view("requetes_generees/new", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
-    }
-
-    public function requetesGenereesFormModalTraitement()
-    {
-        $data = array();
-        return view("requetes_generees/form_modal_traitement", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
     }
 
 }
