@@ -80,12 +80,9 @@
 
                     <div class="col-md-1 col-sm-12 col-xs-12" style="padding: 0" >
                         <select class="form-control" ng-model="jointure.type_join">
-                            <option>INNER JOIN</option>
-                            <option>CROSS JOIN</option>
                             <option selected>LEFT JOIN</option>
                             <option>RIGHT JOIN</option>
-                            <option>FULL JOIN</option>
-                            <option>SELF JOIN</option>
+                            <option>INNER JOIN</option>
                         </select>
                     </div>
 

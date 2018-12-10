@@ -61,7 +61,7 @@ app.controller("ComZeappsStatisticsRequestsListCtrl", ["$scope", "$location", "$
             zhttp.statistics.requetes_generees.execute(id_requete).then(function (response) {
                 if (response.status == 200) {
                     $scope.requeteResultats = response.data.requeteResultats;
-                    console.log($scope.requeteResultats);
+                    console.log('====> ' + $scope.requeteResultats);
                     $location.url('/ng/com_zeapps_statistics/requetes_generees/execute/' + id_requete);
                 }
             });

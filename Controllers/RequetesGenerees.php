@@ -4,7 +4,7 @@ namespace App\com_zeapps_statistics\Controllers;
 
 use Zeapps\Core\Controller;
 use Zeapps\Core\Request;
-
+use Illuminate\Database\Capsule\Manager as Capsule;
 use App\com_zeapps_statistics\Models\RequeteGeneree as ReqGenModel;
 
 use Zeapps\Core\ModelRequest;
@@ -186,6 +186,9 @@ class RequetesGenerees extends Controller
 
         $reqGenModel = ReqGenModel::where('id', $id)->first();
 
+        var_dump($reqGenModel);
+        exit();
+
         if (!$reqGenModel) {
             $reqGenModel = [];
         }
@@ -195,7 +198,6 @@ class RequetesGenerees extends Controller
         ));
     }
 
-
     public function execute(Request $request)
     {
         $id = $request->input('id', 0);
@@ -204,169 +206,150 @@ class RequetesGenerees extends Controller
 
         $std_requete = json_decode($reqGenModel->contenu);
 
-        // array de plusieurs arrays
-        $tables = $std_requete->tables;
-        /*
-         ["tables"]=>
-              array(2) {
-                [0]=>
-                string(35) "com_zeapps_contact_account_families"
-                [1]=>
-                string(37) "com_zeapps_contact_accounting_numbers"
-              }
-         * */
+        $requete_finale = null;
 
-        $jointures = $std_requete->jointures;
-        /*
-         ["jointures"]=>
-              array(2) {
-                [0]=>
-                object(stdClass)#138 (5) {
-                  ["table_left"]=>
-                  string(35) "com_zeapps_contact_account_families"
-                  ["table_right"]=>
-                  string(37) "com_zeapps_contact_accounting_numbers"
-                  ["type_join"]=>
-                  string(9) "FULL JOIN"
-                  ["field_left"]=>
-                  string(5) "label"
-                  ["field_right"]=>
-                  string(6) "number"
+        // ************************************** Début construction requête *******************************************
+
+        /**
+         * Tables
+         */
+        if (count($std_requete->tables)) {
+            $requete_finale = Capsule::table($std_requete->tables[0]);
+        } else {
+            //TODO : ERREUR MAJEURE => ARRET DU SCRIPT
+        }
+
+        /**
+         * Jointures
+         */
+        if (count($std_requete->jointures)) {
+
+            foreach ($std_requete->jointures as $jointure) {
+
+                if ($jointure->table_left == $std_requete->tables[0]) {
+
+                    if ($jointure->type_join == 'LEFT JOIN') {
+                        $requete_finale = $requete_finale->leftjoin($jointure->table_right, $jointure->table_left .'.'. $jointure->field_left , "=", $jointure->table_right . '.' . $jointure->field_right);
+                    } elseif ($jointure->type_join == 'RIGHT JOIN') {
+                        $requete_finale = $requete_finale->rightjoin($jointure->table_right, $jointure->table_left .'.'. $jointure->field_left , "=", $jointure->table_right . '.' . $jointure->field_right);
+                    } elseif ($jointure->type_join == 'INNER JOIN') {
+                        $requete_finale = $requete_finale->join($jointure->table_right, $jointure->table_left .'.'. $jointure->field_left , "=", $jointure->table_right . '.' . $jointure->field_right);
+                    }
+
+                } elseif ($jointure->table_right == $std_requete->tables[0]) {
+
+                    if ($jointure->type_join == 'LEFT JOIN') {
+                        $requete_finale = $requete_finale->leftjoin($jointure->table_left, $jointure->table_right .'.'. $jointure->field_right , "=", $jointure->table_left . '.' . $jointure->field_left);
+                    } elseif ($jointure->type_join == 'RIGHT JOIN') {
+                        $requete_finale = $requete_finale->rightjoin($jointure->table_left, $jointure->table_right .'.'. $jointure->field_right , "=", $jointure->table_left . '.' . $jointure->field_left);
+                    } elseif ($jointure->type_join == 'INNER JOIN') {
+                        $requete_finale = $requete_finale->join($jointure->table_left, $jointure->table_right .'.'. $jointure->field_right , "=", $jointure->table_left . '.' . $jointure->field_left);
+                    }
+
                 }
-                [1]=>
-                object(stdClass)#139 (5) {
-                  ["table_left"]=>
-                  string(35) "com_zeapps_contact_account_families"
-                  ["table_right"]=>
-                  string(37) "com_zeapps_contact_accounting_numbers"
-                  ["type_join"]=>
-                  string(9) "LEFT JOIN"
-                  ["field_left"]=>
-                  string(4) "sort"
-                  ["field_right"]=>
-                  string(10) "type_label"
+
+            }
+        }
+
+        /**
+         * Affichage
+         */
+        $selects = '';
+        if (count($std_requete->affichage)) {
+            $i = 0;
+            foreach ($std_requete->affichage as $affichage) {
+                if ($affichage->operation != "") {
+                    $agregate = explode(' ', $affichage->operation)[0];
+//                    $object = Capsule::raw($agregate. '('.$affichage->field.')');
+//                    $selects[] = $object;
+//                    if ($i == sizeof($std_requete->affichage)-1) {
+//                        $selects .= Capsule::raw($agregate. '('.$affichage->field.')');
+//                    } else {
+//                        $selects .= Capsule::raw($agregate. '('.$affichage->field.')') . "` , `";
+//                    }
+                } else {
+                    if ($i == sizeof($std_requete->affichage)-1) {
+                        $selects .= $affichage->field;
+                    } else {
+                        $selects .= $affichage->field . "` , `";
+                    }
                 }
-              }
-         * */
-
-
-        $affichage = $std_requete->affichage;
-        /*
-        ["affichage"]=>
-          array(3) {
-            [0]=>
-            object(stdClass)#143 (2) {
-              ["field"]=>
-              string(41) "com_zeapps_contact_account_families.label"
-              ["operation"]=>
-              string(9) "COUNT ( )"
+                $i++;
             }
-            [1]=>
-            object(stdClass)#145 (2) {
-              ["field"]=>
-              string(44) "com_zeapps_contact_accounting_numbers.number"
-              ["operation"]=>
-              string(0) ""
-            }
-            [2]=>
-            object(stdClass)#140 (2) {
-              ["field"]=>
-              string(48) "com_zeapps_contact_accounting_numbers.type_label"
-              ["operation"]=>
-              string(0) ""
-            }
-          }
-         * */
 
-        $conditions = $std_requete->conditions;
-        /*
-         ["conditions"]=>
-          array(2) {
-            [0]=>
-            object(stdClass)#147 (3) {
-              ["field"]=>
-              string(41) "com_zeapps_contact_account_families.label"
-              ["operation"]=>
-              string(1) "="
-              ["value"]=>
-              string(4) "toto"
-            }
-            [1]=>
-            object(stdClass)#146 (3) {
-              ["field"]=>
-              string(44) "com_zeapps_contact_accounting_numbers.number"
-              ["operation"]=>
-              string(2) ">="
-              ["value"]=>
-              string(4) "5000"
-            }
-          }
-         * */
+        } else {
+            //TODO : ERREUR MAJEURE => ARRET DU SCRIPT
+        }
 
-        $groupsby = $std_requete->groupsby;
-        $ordersby = $std_requete->ordersby;
-        $limit = $std_requete->limit;
-        $pagination = $std_requete->pagination;
+        $requete_finale = $requete_finale->select($selects);
 
-        /*
-         ["groupsby"]=>
-              array(1) {
-                [0]=>
-                object(stdClass)#144 (1) {
-                  ["field"]=>
-                  string(43) "com_zeapps_contact_accounting_numbers.label"
+        /**
+         * Conditions
+         */
+        if (count($std_requete->conditions)) {
+            foreach ($std_requete->conditions as $condition) {
+
+                if (in_array($condition->operation, ['=', '<', '>', '<=', '>='])) {
+                    $requete_finale = $requete_finale->where($condition->field, $condition->operation, intval($condition->value));
+                } else {
+                    $requete_finale = $requete_finale->where($condition->field, $condition->operation, $condition->value);
                 }
-              }
-          ["ordersby"]=>
-              array(1) {
-                [0]=>
-                object(stdClass)#125 (2) {
-                  ["field"]=>
-                  string(44) "com_zeapps_contact_accounting_numbers.number"
-                  ["sens"]=>
-                  string(4) "DESC"
-                }
-              }
-          ["limit"]=>
-              array(1) {
-                [0]=>
-                string(2) "50"
-              }
-          ["pagination"]=>
-              array(1) {
-                [0]=>
-                string(3) "Non"
-              }
-         * */
+            }
 
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
-        // TODO : Construction dynamique de la requete
+        }
 
-        var_dump($std_requete);
+        $requete_finale = str_replace('``', '`', $requete_finale->toSql());
+
+        var_dump($requete_finale);
         exit();
 
-        // Exemple
-        $results = ReqGenModel::select('nom_requete', 'contenu')
-            ->where('id', '=', $id)
-            ->get()->toArray();
 
-        var_dump($results);
+        /**
+         * Group by
+         */
+        if (count($std_requete->groupsby)) {
+            $groups = '';
+            $i=0;
+            foreach ($std_requete->groupsby as $group) {
+                $groups .= '->groupBy(';
+                if ($i == sizeof($std_requete->groupsby)-1) {
+                    $groups .= '"'.$group->field.'"';
+                } else {
+                    $groups .= '"'.$group->field.'",';
+                }
+                $groups .= ')';
+                $i++;
+            }
+            $requete_finale .= $groups;
+        }
+
+        /**
+         * Order by
+         */
+        if (count($std_requete->ordersby)) {
+            $orders = '';
+            foreach ($std_requete->ordersby as $order) {
+                $orders .= '->orderBy(';
+                $orders .= '"'.$order->field.'", "'.$order->sens.'")';
+            }
+            $requete_finale .= $orders;
+        }
+
+        /**
+         * Limit
+         */
+        if (count($std_requete->limit)) {
+            $requete_finale .= '->limit('.$std_requete->limit[0].')';
+        }
+
+        $requete_finale .= '->get();';
+
+        $result = Capsule::table('zeapps_requetes')->select('*')->get();
+        var_dump($result);
         exit();
-
-        $requeteResultats = array(
-            'nom_requete' => 'nom de la requete',
-            'contenu' => 'contenu de la reqyete (SQL)',
-            'created_at' => 'crée le : xx/xx/yyyy'
-        );
 
         echo json_encode(array(
-            'requeteResultats' => $requeteResultats
+            'requeteResultats' => $requete_finale
         ));
 
 
