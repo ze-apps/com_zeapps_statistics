@@ -25,6 +25,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
         $scope.operationModalAddCondition = null;
 
         // default variables to load from Database
+        $scope.id = 0 ;
         $scope.tables = [] ;
         $scope.jointures = [] ;
         $scope.fields = [] ;
@@ -54,10 +55,9 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
 
         // Select table drop-downs
-        function loadFields(table)
-        {
+        function loadFields(table) {
             if (table) {
-                for(var i=0; i < $scope.fields.length; i++) {
+                for (var i = 0; i < $scope.fields.length; i++) {
                     if ($scope.fields[i].table == table.table) {
                         $scope.fieldsToAdd = $scope.fields[i].fields;
                     }
@@ -78,23 +78,69 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
 
         // reload request
-        zhttp.statistics.requetes_generees.get($routeParams.id).then(function (response) {
-            if (response.status === 200) {
-                var dataJson = JSON.parse(response.data.contenu) ;
+        if ($routeParams.id) {
+            zhttp.statistics.requetes_generees.get($routeParams.id).then(function (response) {
+                if (response.status === 200) {
+                    var dataJson = JSON.parse(response.data.contenu);
 
-                $scope.nameRequest = response.data.nom_requete ;
-                $scope.tables = dataJson.tables;
-                $scope.jointures = dataJson.jointures;
-                $scope.fields = dataJson.fields;
-                $scope.affichages = dataJson.affichages;
-                $scope.conditions = dataJson.conditions;
-                $scope.limits = dataJson.limits;
-                $scope.paginations = dataJson.paginations;
+                    $scope.id = $routeParams.id;
+                    $scope.nameRequest = response.data.nom_requete;
+                    $scope.tables = dataJson.tables;
+                    $scope.jointures = dataJson.jointures;
+                    $scope.affichages = dataJson.affichages;
+                    $scope.conditions = dataJson.conditions;
+                    $scope.limits = dataJson.limits;
+                    $scope.paginations = dataJson.paginations;
 
-                $scope.groupsBy = dataJson.groupsBy;
-                $scope.ordersBy = dataJson.ordersBy;
-            }
-        });
+                    $scope.groupsBy = dataJson.groupsBy;
+                    $scope.ordersBy = dataJson.ordersBy;
+
+
+                    // repeuple les jointures avec les objets javascript qui sont en mémoire sinon ne fonctionne pas
+                    if ($scope.jointures && $scope.jointures.length) {
+                        for (var iJointures = 0; iJointures < $scope.jointures.length; iJointures++) {
+                            for (var iTables = 0; iTables < $scope.tables.length; iTables++) {
+                                if ($scope.tables[iTables].module == $scope.jointures[iJointures].table_left.module && $scope.tables[iTables].table == $scope.jointures[iJointures].table_left.table) {
+                                    $scope.jointures[iJointures].table_left = $scope.tables[iTables];
+
+                                    Object.keys($scope.jointures[iJointures].fieldsLeft).forEach(function (elem) {
+                                        if ($scope.jointures[iJointures].fieldsLeft[elem].name == $scope.jointures[iJointures].field_left.name) {
+                                            $scope.jointures[iJointures].field_left = $scope.jointures[iJointures].fieldsLeft[elem] ;
+                                        }
+
+                                    });
+                                }
+
+                                if ($scope.tables[iTables].module == $scope.jointures[iJointures].table_right.module && $scope.tables[iTables].table == $scope.jointures[iJointures].table_right.table) {
+                                    $scope.jointures[iJointures].table_right = $scope.tables[iTables];
+
+                                    Object.keys($scope.jointures[iJointures].fieldsRight).forEach(function (elem) {
+                                        if ($scope.jointures[iJointures].fieldsRight[elem].name == $scope.jointures[iJointures].field_right.name) {
+                                            $scope.jointures[iJointures].field_right = $scope.jointures[iJointures].fieldsRight[elem] ;
+                                        }
+
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+
+                    // reconstitue le tableau fields
+                    $scope.fields = [];
+                    for (var iTables = 0; iTables < $scope.tables.length; iTables++) {
+                        $scope.fields.push({
+                            table: $scope.tables[iTables].table,
+                            fields: $scope.tables[iTables].fields
+                        });
+                        Object.keys($scope.tables[iTables].fields).forEach(function (elem) {
+                            $scope.fieldsGroupAndOrderBy.push({field: $scope.tables[iTables].table + "." + elem});
+                        });
+                    }
+
+                }
+            });
+        }
 
 
         $scope.addTable = function () {
@@ -107,7 +153,6 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 // test si la table est déjà présente
                 var possibleAjout = true;
                 for (var i = 0; i < $scope.tables.length; i++) {
-
                     if ($scope.tables[i].module == $scope.moduleModelAddTable && $scope.tables[i].table == $scope.tableModalAddTable) {
                         possibleAjout = false ;
                         break;
@@ -120,7 +165,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                     zhttp.statistics.requetes_generees.fields($scope.moduleModelAddTable, $scope.tableModalAddTable).then(function (response) {
                         if (response.status === 200) {
                             $scope.fields.push({table: $scope.tableModalAddTable, fields:response.data.fields});
-                            $scope.tables.push({module: $scope.moduleModelAddTable, table: $scope.tableModalAddTable, fields: Object.keys(response.data.fields)});
+                            $scope.tables.push({module: $scope.moduleModelAddTable, table: $scope.tableModalAddTable, fields: response.data.fields});
 
                             // Update list of folders of group by and order by
                             Object.keys(response.data.fields).forEach(function(elem) {
@@ -282,6 +327,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
             // Elements of request
             arr_request['tables'] = $scope.tables ;
+            arr_request['fields'] = $scope.fields ;
             arr_request['jointures'] = $scope.jointures ;
             arr_request['affichages'] = $scope.affichages ;
             arr_request['conditions'] = $scope.conditions ;
@@ -291,6 +337,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
             arr_request['pagination'] = ['Non'] ; // TODO // TODO // TODO // TODO // TODO // TODO // TODO
 
             var jsonObject = {
+                'id' : $scope.id,
                 'nom_requete' : $scope.nameRequest,
                 'contenu' : Object.assign({}, arr_request)
             };
@@ -314,24 +361,14 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
         $scope.getFieldsOfSelectedTableLeft = getFieldsOfSelectedTableLeft;
         function getFieldsOfSelectedTableLeft(table, jointure) {
             if (table != null) {
-                var selectedTable = table.table;
-                for(var i=0; i<$scope.fields.length; i++) {
-                    if ($scope.fields[i].table == selectedTable) {
-                        jointure.fieldsLeft = $scope.fields[i].fields;
-                    }
-                }
+                jointure.fieldsLeft = table.fields;
             }
         }
 
         $scope.getFieldsOfSelectedTableRight = getFieldsOfSelectedTableRight;
         function getFieldsOfSelectedTableRight(table, jointure) {
             if (table != null) {
-                var selectedTable = table.table;
-                for(var i=0; i<$scope.fields.length; i++) {
-                    if ($scope.fields[i].table == selectedTable) {
-                        jointure.fieldsRight = $scope.fields[i].fields;
-                    }
-                }
+                jointure.fieldsRight = table.fields;
             }
         }
 

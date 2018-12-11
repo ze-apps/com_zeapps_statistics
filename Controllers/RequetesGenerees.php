@@ -158,7 +158,7 @@ class RequetesGenerees extends Controller
 
         $ReqGenModel = new ReqGenModel() ;
 
-        if (isset($data["id"]) && is_numeric($data["id"])) {
+        if (isset($data["id"]) && is_numeric($data["id"]) && $data["id"] > 0) {
             $ReqGenModel = ReqGenModel::where('id', $data["id"])->first() ;
         }
 
