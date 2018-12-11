@@ -25,7 +25,7 @@
                     <tr>
                         <th class="col-md-1">#</th>
                         <th class="col-md-1">Nom requête</th>
-                        <th class="col-md-4">Contenu</th>
+                        {{--<th class="col-md-4">Contenu</th>--}}
                         <th class="col-md-1">Date création</th>
                         <th class="col-md-1">Action</th>
                     </tr>
@@ -35,15 +35,12 @@
 
                         <td>@{{requeteGeneree.id}}</td>
                         <td>@{{requeteGeneree.nom_requete}}</td>
-                        <td>@{{requeteGeneree.contenu}}</td>
+                        {{--<td>@{{requeteGeneree.contenu}}</td>--}}
                         <td>@{{requeteGeneree.created_at || "-" | date:'dd/MM/yyyy'}}</td>
                         <td class="text-left">
-                            <button title="Modifier" class="bg-info" ng-click="edit(RequeteGeneree)" >
+                            <button title="Modifier" class="bg-info" ng-click="edit(requeteGeneree.id)" >
                                 <span class="fa fa-pencil"></span>
                             </button>
-                            {{--<button title="Exécuter" class="bg-primary open-modalExecuteRequest" data-target="#modalExecuteRequest" data-toggle="modal" >--}}
-                                {{--<span class="fa fa-spinner"></span>--}}
-                            {{--</button>--}}
                             <button title="Exécuter" class="bg-primary" ng-click="execute(requeteGeneree)">
                                 <span class="fa fa-spinner"></span>
                             </button>

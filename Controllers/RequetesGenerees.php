@@ -186,16 +186,11 @@ class RequetesGenerees extends Controller
 
         $reqGenModel = ReqGenModel::where('id', $id)->first();
 
-        var_dump($reqGenModel);
-        exit();
-
         if (!$reqGenModel) {
             $reqGenModel = [];
         }
 
-        echo json_encode(array(
-            'reqGenModel' => $reqGenModel
-        ));
+        echo json_encode($reqGenModel);
     }
 
     public function execute(Request $request)
@@ -206,6 +201,7 @@ class RequetesGenerees extends Controller
 
         $std_requete = json_decode($reqGenModel->contenu);
 
+
         $requete_finale = null;
 
         // ************************************** Début construction requête *******************************************
@@ -213,66 +209,54 @@ class RequetesGenerees extends Controller
         /**
          * Tables
          */
-        if (count($std_requete->tables)) {
-            $requete_finale = Capsule::table($std_requete->tables[0]);
-        } else {
-            //TODO : ERREUR MAJEURE => ARRET DU SCRIPT
-        }
+        if (sizeof($std_requete->tables) == 1) {
+            $requete_finale = Capsule::table($std_requete->tables[0]->table);
+        } elseif (sizeof($std_requete->tables) > 1) {
+            /**
+             * Jointures
+             */
+            if (count($std_requete->jointures)) {
 
-        /**
-         * Jointures
-         */
-        if (count($std_requete->jointures)) {
+                $requete_finale = Capsule::table($std_requete->jointures[0]->table_left->table);
 
-            foreach ($std_requete->jointures as $jointure) {
 
-                if ($jointure->table_left == $std_requete->tables[0]) {
+                foreach ($std_requete->jointures as $jointure) {
 
                     if ($jointure->type_join == 'LEFT JOIN') {
-                        $requete_finale = $requete_finale->leftjoin($jointure->table_right, $jointure->table_left .'.'. $jointure->field_left , "=", $jointure->table_right . '.' . $jointure->field_right);
+                        $requete_finale = $requete_finale->leftjoin($jointure->table_right->table, $jointure->table_left->table .'.'. $jointure->field_left->name , "=", $jointure->table_right->table . '.' . $jointure->field_right->name);
                     } elseif ($jointure->type_join == 'RIGHT JOIN') {
-                        $requete_finale = $requete_finale->rightjoin($jointure->table_right, $jointure->table_left .'.'. $jointure->field_left , "=", $jointure->table_right . '.' . $jointure->field_right);
+                        $requete_finale = $requete_finale->rightjoin($jointure->table_right->table, $jointure->table_left->table .'.'. $jointure->field_left->name , "=", $jointure->table_right->table . '.' . $jointure->field_right->name);
                     } elseif ($jointure->type_join == 'INNER JOIN') {
-                        $requete_finale = $requete_finale->join($jointure->table_right, $jointure->table_left .'.'. $jointure->field_left , "=", $jointure->table_right . '.' . $jointure->field_right);
+                        $requete_finale = $requete_finale->join($jointure->table_right->table, $jointure->table_left->table .'.'. $jointure->field_left->name , "=", $jointure->table_right->table . '.' . $jointure->field_right->name);
                     }
-
-                } elseif ($jointure->table_right == $std_requete->tables[0]) {
-
-                    if ($jointure->type_join == 'LEFT JOIN') {
-                        $requete_finale = $requete_finale->leftjoin($jointure->table_left, $jointure->table_right .'.'. $jointure->field_right , "=", $jointure->table_left . '.' . $jointure->field_left);
-                    } elseif ($jointure->type_join == 'RIGHT JOIN') {
-                        $requete_finale = $requete_finale->rightjoin($jointure->table_left, $jointure->table_right .'.'. $jointure->field_right , "=", $jointure->table_left . '.' . $jointure->field_left);
-                    } elseif ($jointure->type_join == 'INNER JOIN') {
-                        $requete_finale = $requete_finale->join($jointure->table_left, $jointure->table_right .'.'. $jointure->field_right , "=", $jointure->table_left . '.' . $jointure->field_left);
-                    }
-
                 }
-
             }
+
+        } else {
+            // TODO : ERREUR AUCUNE TABLE SELECTIONNEE
+            // TODO : ERREUR AUCUNE TABLE SELECTIONNEE
+            // TODO : ERREUR AUCUNE TABLE SELECTIONNEE
+            // TODO : ERREUR AUCUNE TABLE SELECTIONNEE
+            // TODO : ERREUR AUCUNE TABLE SELECTIONNEE
         }
 
         /**
          * Affichage
          */
-        $selects = '';
-        if (count($std_requete->affichage)) {
+        if (count($std_requete->affichages)) {
             $i = 0;
-            foreach ($std_requete->affichage as $affichage) {
+
+            $arrSelect = array();
+
+            $indexAffichage = 0 ;
+            foreach ($std_requete->affichages as &$affichage) {
+                $indexAffichage++;
+                $affichage->indexAffichage = 'field_req_zeapps_' . $indexAffichage ;
+
                 if ($affichage->operation != "") {
-                    $agregate = explode(' ', $affichage->operation)[0];
-//                    $object = Capsule::raw($agregate. '('.$affichage->field.')');
-//                    $selects[] = $object;
-//                    if ($i == sizeof($std_requete->affichage)-1) {
-//                        $selects .= Capsule::raw($agregate. '('.$affichage->field.')');
-//                    } else {
-//                        $selects .= Capsule::raw($agregate. '('.$affichage->field.')') . "` , `";
-//                    }
+                    $arrSelect[] = Capsule::raw(explode(' ', $affichage->operation)[0] . '(' . $affichage->field . ') as field_req_zeapps_' . $indexAffichage) ;
                 } else {
-                    if ($i == sizeof($std_requete->affichage)-1) {
-                        $selects .= $affichage->field;
-                    } else {
-                        $selects .= $affichage->field . "` , `";
-                    }
+                    $arrSelect[] = $affichage->field . ' as field_req_zeapps_' . $indexAffichage ;
                 }
                 $i++;
             }
@@ -281,75 +265,52 @@ class RequetesGenerees extends Controller
             //TODO : ERREUR MAJEURE => ARRET DU SCRIPT
         }
 
-        $requete_finale = $requete_finale->select($selects);
+        if ($arrSelect && count($arrSelect)) {
+            $requete_finale->select($arrSelect);
+        }
 
         /**
          * Conditions
          */
         if (count($std_requete->conditions)) {
             foreach ($std_requete->conditions as $condition) {
-
                 if (in_array($condition->operation, ['=', '<', '>', '<=', '>='])) {
                     $requete_finale = $requete_finale->where($condition->field, $condition->operation, intval($condition->value));
                 } else {
                     $requete_finale = $requete_finale->where($condition->field, $condition->operation, $condition->value);
                 }
             }
-
         }
-
-        $requete_finale = str_replace('``', '`', $requete_finale->toSql());
-
-        var_dump($requete_finale);
-        exit();
-
 
         /**
          * Group by
          */
-        if (count($std_requete->groupsby)) {
-            $groups = '';
-            $i=0;
-            foreach ($std_requete->groupsby as $group) {
-                $groups .= '->groupBy(';
-                if ($i == sizeof($std_requete->groupsby)-1) {
-                    $groups .= '"'.$group->field.'"';
-                } else {
-                    $groups .= '"'.$group->field.'",';
-                }
-                $groups .= ')';
-                $i++;
+        if (count($std_requete->groupsBy)) {
+            foreach ($std_requete->groupsBy as $group) {
+                $requete_finale = $requete_finale->groupBy($group->field);
             }
-            $requete_finale .= $groups;
         }
 
         /**
          * Order by
          */
-        if (count($std_requete->ordersby)) {
-            $orders = '';
-            foreach ($std_requete->ordersby as $order) {
-                $orders .= '->orderBy(';
-                $orders .= '"'.$order->field.'", "'.$order->sens.'")';
+        if (count($std_requete->ordersBy)) {
+            foreach ($std_requete->ordersBy as $order) {
+                $requete_finale = $requete_finale->orderBy($order->field, $order->sens);
             }
-            $requete_finale .= $orders;
         }
 
         /**
          * Limit
          */
-        if (count($std_requete->limit)) {
-            $requete_finale .= '->limit('.$std_requete->limit[0].')';
+        if (count($std_requete->limits)) {
+            $requete_finale = $requete_finale->limit($std_requete->limits[0]);
         }
 
-        $requete_finale .= '->get();';
+        $resultats = $requete_finale->get()->toArray();
 
-        $result = Capsule::table('zeapps_requetes')->select('*')->get();
-        var_dump($result);
-        exit();
-
-        echo json_encode(array(
-            'requeteResultats' => $requete_finale
+        echo json_encode(array('requete' => $std_requete,
+            'resultats' => $resultats
         ));
 
 

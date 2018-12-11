@@ -58,17 +58,11 @@ app.controller("ComZeappsStatisticsRequestsListCtrl", ["$scope", "$location", "$
 
         function execute(requeteGeneree) {
             var id_requete = requeteGeneree.id;
-            zhttp.statistics.requetes_generees.execute(id_requete).then(function (response) {
-                if (response.status == 200) {
-                    $scope.requeteResultats = response.data.requeteResultats;
-                    console.log('====> ' + $scope.requeteResultats);
-                    $location.url('/ng/com_zeapps_statistics/requetes_generees/execute/' + id_requete);
-                }
-            });
+            $location.url('/ng/com_zeapps_statistics/requetes_generees/execute/' + id_requete);
         }
 
-        function edit(requeteGeneree) {
-            console.log(requeteGeneree);
+        function edit(id) {
+            $location.url('/ng/com_zeapps_statistics/requetes_generees/edit/' + id);
         }
 
 

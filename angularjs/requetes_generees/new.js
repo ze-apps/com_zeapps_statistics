@@ -1,8 +1,10 @@
-app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$rootScope", "zeHttp", "zeapps_modal", "menu",
+app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$location", "$rootScope", "zeHttp", "zeapps_modal", "menu",
 
-    function ($scope, $location, $rootScope, zhttp, zeapps_modal, menu) {
+    function ($scope, $routeParams, $location, $rootScope, zhttp, zeapps_modal, menu) {
 
         menu("com_zeapps_statistics", "com_zeapps_statistics_requeteur");
+
+
 
         // Load all data
         $scope.loadModules = loadModules;
@@ -73,6 +75,26 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                 }
             });
         }
+
+
+        // reload request
+        zhttp.statistics.requetes_generees.get($routeParams.id).then(function (response) {
+            if (response.status === 200) {
+                var dataJson = JSON.parse(response.data.contenu) ;
+
+                $scope.nameRequest = response.data.nom_requete ;
+                $scope.tables = dataJson.tables;
+                $scope.jointures = dataJson.jointures;
+                $scope.fields = dataJson.fields;
+                $scope.affichages = dataJson.affichages;
+                $scope.conditions = dataJson.conditions;
+                $scope.limits = dataJson.limits;
+                $scope.paginations = dataJson.paginations;
+
+                $scope.groupsBy = dataJson.groupsBy;
+                $scope.ordersBy = dataJson.ordersBy;
+            }
+        });
 
 
         $scope.addTable = function () {
@@ -248,7 +270,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
         };
 
         $scope.addJointure = function () {
-            $scope.jointures.push({table_left: '', field_left: '', type_join: '', table_right: '', field_right: ''});
+            $scope.jointures.push({table_left: {}, field_left: {}, type_join: {}, table_right: {}, field_right: {}});
         };
 
 
@@ -259,81 +281,14 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
             var validation = true;
 
             // Elements of request
-            arr_request['tables'] = [] ;
-            arr_request['jointures'] = [] ;
-            arr_request['affichage'] = [] ;
-            arr_request['conditions'] = [] ;
-            arr_request['groupsby'] = [] ;
-            arr_request['ordersby'] = [] ;
-            arr_request['limit'] = [] ;
-            arr_request['pagination'] = ['Non'] ;
-
-            // Tables (obligé sinon requete invalide)
-            if ($scope.tables.length > 0) {
-                for (var i=0; i < $scope.tables.length; i++) {
-                    arr_request['tables'].push($scope.tables[i].table);
-                }
-            } else {
-                validation = false;
-            }
-
-            // Jointures
-            if ($scope.jointures.length > 0) {
-                for (var j=0; j < $scope.jointures.length; j++) {
-
-                    // Jointure ajoutée au DOM mais au moins 1 champ non renseigné => pas de traitement
-                    if ($scope.jointures[j] != undefined && $scope.jointures[j].table_left != ''
-                        && $scope.jointures[j].field_left != '' && $scope.jointures[j].type_join != ''
-                        && $scope.jointures[j].table_right != '' && $scope.jointures[j].field_right != '') {
-
-                        arr_request['jointures'][j] = {
-                            'table_left': $scope.jointures[j].table_left.table,
-                            'table_right': $scope.jointures[j].table_right.table,
-                            'type_join': $scope.jointures[j].type_join,
-                            'field_left': $scope.jointures[j].field_left.name,
-                            'field_right': $scope.jointures[j].field_right.name
-                        };
-
-                    } else {
-                        alert('Au moins une jointure est non renseignée (ou incomplète).');
-                        return false;
-                    }
-                }
-            }
-
-            // Affichage (Obligé sinon requete invalide)
-            if ($scope.affichages.length > 0) {
-                arr_request['affichage'] = $scope.affichages;
-            } else {
-                validation = false;
-            }
-
-
-            // Conditions
-            for(var l = 0; l < $scope.conditions.length; l++) {
-                delete $scope.conditions[l]['$$hashKey'];
-            }
+            arr_request['tables'] = $scope.tables ;
+            arr_request['jointures'] = $scope.jointures ;
+            arr_request['affichages'] = $scope.affichages ;
             arr_request['conditions'] = $scope.conditions ;
-
-            // Group By
-            for(var m = 0; m < $scope.groupsBy.length; m++) {
-                delete $scope.groupsBy[m]['$$hashKey'];
-            }
-            arr_request['groupsby'] = $scope.groupsBy ;
-
-            // Order By
-            for(var n = 0; n < $scope.ordersBy.length; n++) {
-                delete $scope.ordersBy[n]['$$hashKey'];
-            }
-            arr_request['ordersby'] = $scope.ordersBy ;
-
-            // Limit
-            arr_request['limit'] = $scope.limits ;
-
-            // Pagination
-            if ($scope.fieldPaginatiopn !== undefined) {
-                arr_request['pagination'] = [$scope.fieldPaginatiopn];
-            }
+            arr_request['groupsBy'] = $scope.groupsBy ;
+            arr_request['ordersBy'] = $scope.ordersBy ;
+            arr_request['limits'] = $scope.limits ;
+            arr_request['pagination'] = ['Non'] ; // TODO // TODO // TODO // TODO // TODO // TODO // TODO
 
             var jsonObject = {
                 'nom_requete' : $scope.nameRequest,
@@ -345,7 +300,7 @@ app.controller("ComZeappsRequetesGenereesNewCtrl", ["$scope", "$location", "$roo
                     if (response.data && response.data !== "false") {
                         if (isNaN(response.data) === false && response.data > 0) {
                             // Insert request is ok => redirect to list
-                            $location.path("/ng/com_zeapps_statistics/requetes_generees/search");
+                            $location.path("/ng/com_zeapps_statistics/requetes_generees");
                         }
                     }
                 });
