@@ -10,6 +10,7 @@ app.config(["$provide",
 					new : new_requete_generee,
                     contenu : contenu_requetes_generees,
                     execute : execute_requete_generee,
+                    deleteElement : deleteElement,
 
 					modules : get_modules,
 					tables : get_tables,
@@ -46,6 +47,10 @@ app.config(["$provide",
             function execute_requete_generee(id_requete_generee)
             {
                 return zeHttp.get("/com_zeapps_statistics/requetes_generees/execute/" + id_requete_generee);
+            }
+            function deleteElement(id_requete_generee, elem, type)
+            {
+                return zeHttp.post("/com_zeapps_statistics/requetes_generees/delete_element/"+ id_requete_generee + "/element/" + elem + '/type/' + type);
             }
             function new_requete_generee()
             {

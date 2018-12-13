@@ -8,8 +8,6 @@ app.controller("ComZeappsRequetesGenereesExecuteCtrl", ["$scope", "$routeParams"
             if (response.status == 200) {
                 $scope.resultats = response.data.resultats;
                 $scope.requete = response.data.requete;
-
-                console.log($scope.resultats);
             }
         });
     }]);

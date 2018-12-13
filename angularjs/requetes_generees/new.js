@@ -55,7 +55,8 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
 
         // Select table drop-downs
-        function loadFields(table) {
+        function loadFields(table)
+        {
             if (table) {
                 for (var i = 0; i < $scope.fields.length; i++) {
                     if ($scope.fields[i].table == table.table) {
@@ -189,10 +190,15 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 // test si la table est déjà présente
                 var possibleAjout = true;
 
-                for (var i = 0; i < $scope.affichages.length; i++) {
+                // Json to array
+                var arrAffichage = $.map($scope.affichages, function(el, i) {
+                    return el;
+                });
 
-                    if ($scope.affichages[i].field == $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField &&
-                        $scope.affichages[i].operation == $scope.operationModalAddField) {
+                for (var i = 0; i < arrAffichage.length; i++) {
+
+                    if (arrAffichage[i].field == $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField &&
+                        arrAffichage[i].operation == $scope.operationModalAddField) {
 
                         possibleAjout = false ;
                         break;
@@ -200,7 +206,8 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 }
 
                 if (possibleAjout) {
-                    $scope.affichages.push({field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField, operation: $scope.operationModalAddField});
+                    arrAffichage.push({field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField, operation: $scope.operationModalAddField});
+                    $scope.affichages = arrAffichage;
                 }
 
                 return true;
@@ -359,29 +366,292 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
 
         $scope.getFieldsOfSelectedTableLeft = getFieldsOfSelectedTableLeft;
-        function getFieldsOfSelectedTableLeft(table, jointure) {
+        function getFieldsOfSelectedTableLeft(table, jointure)
+        {
             if (table != null) {
                 jointure.fieldsLeft = table.fields;
             }
         }
 
         $scope.getFieldsOfSelectedTableRight = getFieldsOfSelectedTableRight;
-        function getFieldsOfSelectedTableRight(table, jointure) {
+        function getFieldsOfSelectedTableRight(table, jointure)
+        {
             if (table != null) {
                 jointure.fieldsRight = table.fields;
             }
         }
 
         $scope.supprimerCetteJointure = supprimerCetteJointure;
-        function supprimerCetteJointure(jointure) {
+        function supprimerCetteJointure(jointure)
+        {
+            if ($routeParams.id) {
 
-            for (var i=0; i < $scope.jointures.length; i++) {
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, jointure.table_left.table, 'jointure').then(function (response) {
+                    for (var i=0; i < $scope.jointures.length; i++) {
+                        if ($scope.jointures[i].$$hashKey === jointure.$$hashKey) {
+                            $scope.jointures.splice(i, 1);
+                            break;
+                        }
+                    }
+                    for (var i=0; i < $scope.affichages.length; i++) {
+                        var _table = $scope.affichages[i].field.split(".");
+                        if ( _table[0] === jointure.table_left.table) {
+                            $scope.affichages.splice(i, 1);
+                        }
+                    }
 
-                if ($scope.jointures[i].$$hashKey === jointure.$$hashKey) {
-                    $scope.jointures.splice(i, 1);
-                    break;
-                }
+                    for (var i=0; i < $scope.conditions.length; i++) {
+                        var _table = $scope.conditions[i].field.split(".");
+                        if ( _table[0] === jointure.table_left.table) {
+                            $scope.conditions.splice(i, 1);
+                        }
+                    }
+
+                    for (var i=0; i < $scope.groupsBy.length; i++) {
+                        var _table = $scope.groupsBy[i].field.split(".");
+                        if ( _table[0] === jointure.table_left.table) {
+                            $scope.groupsBy.splice(i, 1);
+                        }
+                    }
+
+                    for (var i=0; i < $scope.ordersBy.length; i++) {
+                        var _table = $scope.ordersBy[i].field.split(".");
+                        if ( _table[0] === jointure.table_left.table) {
+                            $scope.ordersBy.splice(i, 1);
+                        }
+                    }
+                });
+
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, jointure.table_right.table, 'jointure').then(function (response) {
+                    for (var i=0; i < $scope.jointures.length; i++) {
+                        if ($scope.jointures[i].$$hashKey === jointure.$$hashKey) {
+                            $scope.jointures.splice(i, 1);
+                            break;
+                        }
+                    }
+                    for (var i=0; i < $scope.affichages.length; i++) {
+                        var _table = $scope.affichages[i].field.split(".");
+                        if ( _table[0] === jointure.table_right.table) {
+                            $scope.affichages.splice(i, 1);
+                        }
+                    }
+
+                    for (var i=0; i < $scope.conditions.length; i++) {
+                        var _table = $scope.conditions[i].field.split(".");
+                        if ( _table[0] === jointure.table_right.table) {
+                            $scope.conditions.splice(i, 1);
+                        }
+                    }
+
+                    for (var i=0; i < $scope.groupsBy.length; i++) {
+                        var _table = $scope.groupsBy[i].field.split(".");
+                        if ( _table[0] === jointure.table_right.table) {
+                            $scope.groupsBy.splice(i, 1);
+                        }
+                    }
+
+                    for (var i=0; i < $scope.ordersBy.length; i++) {
+                        var _table = $scope.ordersBy[i].field.split(".");
+                        if ( _table[0] === jointure.table_right.table) {
+                            $scope.ordersBy.splice(i, 1);
+                        }
+                    }
+                });
             }
         }
+
+        $scope.deleteTableFromRequest = deleteTableFromRequest;
+        function deleteTableFromRequest(table)
+        {
+            if ($routeParams.id) {
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, table.table, 'table').then(function (response) {
+                    if (response.data) {
+                        if (response.data == 'Element of request deleted') {
+
+                            // Remove data from DOM
+                            for (var i=0; i < $scope.tables.length; i++) {
+                                if ($scope.tables[i].table === table.table) {
+                                    $scope.tables.splice(i, 1);
+                                    break;
+                                }
+                            }
+
+                            for (var i=0; i < $scope.fields.length; i++) {
+                                if ($scope.fields[i].table === table.table) {
+                                    $scope.fields.splice(i, 1);
+                                    break;
+                                }
+                            }
+
+                            for (var i=0; i < $scope.jointures.length; i++) {
+                                if ($scope.jointures[i].table_left.table === table.table || $scope.jointures[i].table_right.table === table.table) {
+                                    $scope.jointures.splice(i, 1);
+                                    break;
+                                }
+                            }
+
+                            for (var i=0; i < $scope.affichages.length; i++) {
+                                var _table = $scope.affichages[i].field.split(".");
+                                if ( _table[0] === table.table) {
+                                    $scope.affichages.splice(i, 1);
+                                }
+                            }
+
+                            for (var i=0; i < $scope.conditions.length; i++) {
+                                var _table = $scope.conditions[i].field.split(".");
+                                if ( _table[0] === table.table) {
+                                    $scope.conditions.splice(i, 1);
+                                }
+                            }
+
+                            for (var i=0; i < $scope.groupsBy.length; i++) {
+                                var _table = $scope.groupsBy[i].field.split(".");
+                                if ( _table[0] === table.table) {
+                                    $scope.groupsBy.splice(i, 1);
+                                }
+                            }
+
+                            for (var i=0; i < $scope.ordersBy.length; i++) {
+                                var _table = $scope.ordersBy[i].field.split(".");
+                                if ( _table[0] === table.table) {
+                                    $scope.ordersBy.splice(i, 1);
+                                }
+                            }
+
+                        } else {
+                            alert(response.data);
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+
+        $scope.deleteAffichageFromRequest = deleteAffichageFromRequest;
+        function deleteAffichageFromRequest(affichage)
+        {
+            if ($routeParams.id) {
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, affichage.field, 'affichage').then(function (response) {
+                    if (response.data) {
+                        if (response.data == 'Element of request deleted') {
+
+                            // Remove data from DOM
+                            var arrAffichages = $.map($scope.affichages, function(el, i) {
+                                return el;
+                            });
+
+                            for (var i=0; i < arrAffichages.length; i++) {
+                                if ( arrAffichages[i].field === affichage.field) {
+                                    arrAffichages.splice(i, 1);
+                                }
+                            }
+
+                            $scope.affichages = arrAffichages;
+
+                        } else {
+                            alert(response.data);
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+
+        $scope.deleteConditionFromRequest = deleteConditionFromRequest;
+        function deleteConditionFromRequest(condition)
+        {
+            if ($routeParams.id) {
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, condition.field, 'condition').then(function (response) {
+                    if (response.data) {
+                        if (response.data == 'Element of request deleted') {
+
+                            // Remove data from DOM => Transfet de Json vers array pour le "splice"
+                            var arrConditions = $.map($scope.conditions, function(el, i) {
+                                return el;
+                            });
+
+                            for (var i=0; i < arrConditions.length; i++) {
+                                if ( arrConditions[i].field === condition.field) {
+                                    arrConditions.splice(i, 1);
+                                }
+                            }
+
+                            $scope.conditions = arrConditions;
+
+                        } else {
+                            alert(response.data);
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+
+        $scope.deleteGroupByFromRequest = deleteGroupByFromRequest;
+        function deleteGroupByFromRequest(GroupBy)
+        {
+            if ($routeParams.id) {
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, GroupBy.field, 'groupBY').then(function (response) {
+                    if (response.data) {
+                        if (response.data == 'Element of request deleted') {
+
+                            // Remove data from DOM
+                            var arrGroupsBy = $.map($scope.groupsBy, function(el, i) {
+                                return el;
+                            });
+
+                            for (var i=0; i < arrGroupsBy.length; i++) {
+                                if ( arrGroupsBy[i].field === GroupBy.field) {
+                                    arrGroupsBy.splice(i, 1);
+                                }
+                            }
+
+                            $scope.groupsBy = arrGroupsBy;
+
+                        } else {
+                            alert(response.data);
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+
+        $scope.deleteOrderByFromRequest = deleteOrderByFromRequest;
+        function deleteOrderByFromRequest(OrderBy)
+        {
+            if ($routeParams.id) {
+                zhttp.statistics.requetes_generees.deleteElement($routeParams.id, OrderBy.field, 'orderBy').then(function (response) {
+                    if (response.data) {
+                        if (response.data == 'Element of request deleted') {
+
+                            // Remove data from DOM
+                            var arrOrdersBy = $.map($scope.ordersBy, function(el, i) {
+                                return el;
+                            });
+
+                            for (var i=0; i < arrOrdersBy.length; i++) {
+                                if ( arrOrdersBy[i].field === OrderBy.field) {
+                                    arrOrdersBy.splice(i, 1);
+                                }
+                            }
+
+                            $scope.ordersBy = arrOrdersBy;
+
+                        } else {
+                            alert(response.data);
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+
+        $scope.back = back;
+        function back()
+        {
+            $location.path("/ng/com_zeapps_statistics/requetes_generees");
+        }
+
 
 }]);

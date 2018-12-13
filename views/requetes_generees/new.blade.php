@@ -31,7 +31,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <table id="tblTables" class="table table-condensed table-responsive table-striped table-bordered">
+            <table id="tblTables" class="table table-condensed table-responsive table-bordered">
                 <thead>
                     <tr>
                         <th class="col-md-6">Module</th>
@@ -42,6 +42,9 @@
                     <tr ng-repeat="table in tables">
                         <td>@{{ table.module }}</td>
                         <td>@{{ table.table }}</td>
+                        <td>
+                            <span ng-click="deleteTableFromRequest(table)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette table"></span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -130,6 +133,9 @@
                         <tr ng-repeat="affichage in affichages">
                             <td>@{{ affichage.field }}</td>
                             <td>@{{ affichage.operation }}</td>
+                            <td>
+                                <span ng-click="deleteAffichageFromRequest(affichage)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette sélection"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -166,6 +172,9 @@
                             <td>@{{ condition.field }}</td>
                             <td>@{{ condition.operation }}</td>
                             <td>@{{ condition.value }}</td>
+                            <td>
+                                <span ng-click="deleteConditionFromRequest(condition)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette condition"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -192,12 +201,15 @@
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Champs</th>
+                            <th class="col-md-12">Champs</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="group in groupsBy">
                             <td>@{{ group.field }}</td>
+                            <td>
+                                <span ng-click="deleteGroupByFromRequest(group)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer ce groupement"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -232,6 +244,9 @@
                         <tr ng-repeat="order in ordersBy">
                             <td>@{{ order.field }}</td>
                             <td>@{{ order.sens }}</td>
+                            <td>
+                                <span ng-click="deleteOrderByFromRequest(order)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer ce tri"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -258,7 +273,10 @@
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <tbody>
                         <tr ng-if="limits.length == 1">
-                            <td>@{{limits[0]}}</td>
+                            <td class="col-md-12">@{{limits[0]}}</td>
+                            <td>
+                                <span ng-click="deleteLimitRequest(limits[0])" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette limite"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -285,7 +303,10 @@
                 <table class="table table-condensed table-responsive table-striped table-bordered">
                     <tbody>
                         <tr ng-if="paginations.length == 1">
-                            <td>@{{paginations[0]}}</td>
+                            <td class="col-md-12">@{{paginations[0]}}</td>
+                            <td>
+                                <span ng-click="deletePaginationRequest(paginations[0])" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette pagination"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -296,7 +317,7 @@
 
     <div class="row pull-right" style="margin-top: 10px; margin-bottom: 20px;">
         <div class="col-md-12">
-            <button class="btn btn-danger" style="width: 150px"><span class="fa fa-close"></span> Annuler</button>
+            <button class="btn btn-danger" style="width: 150px" ng-click="back()"><span class="fa fa-close"></span> Annuler</button>
             <button class="btn btn-primary" style="width: 150px" ng-click="saveRequest()"><span class="fa fa-save"></span> Enregistrer</button>
         </div>
     </div>
@@ -487,6 +508,7 @@
                                     <option><</option>
                                     <option>>=</option>
                                     <option><=</option>
+                                    <option><></option>
                                     <option>IN</option>
                                     <option>BETWEEN</option>
                                     <option>LIKE %valeur</option>

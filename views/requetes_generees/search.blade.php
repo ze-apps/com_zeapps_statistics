@@ -11,8 +11,7 @@
             </div>
 
             <div class="col-md-6">
-                <ze-btn class="pull-right" fa="download" color="success" hint="Excel" always-on="true"
-                        ng-click="getExcel()"></ze-btn>
+
             </div>
 
         </div>
