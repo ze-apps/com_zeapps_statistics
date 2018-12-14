@@ -33,4 +33,15 @@ class View extends Controller
         return view("requetes_generees/new", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
     }
 
+
+    /**
+     * Modals of updates
+     *
+     * @return \Zeapps\Core\View
+     */
+    public function updateTableModal(){
+        $data = array();
+        return view("requetes_generees/modal_update_table", $data, BASEPATH . 'App/com_zeapps_statistics/views/');
+    }
+
 }

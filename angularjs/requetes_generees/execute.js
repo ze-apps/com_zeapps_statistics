@@ -10,4 +10,11 @@ app.controller("ComZeappsRequetesGenereesExecuteCtrl", ["$scope", "$routeParams"
                 $scope.requete = response.data.requete;
             }
         });
+
+        $scope.back = back;
+        function back()
+        {
+            $location.path("/ng/com_zeapps_statistics/requetes_generees");
+        }
+
     }]);

@@ -43,6 +43,15 @@
                         <td>@{{ table.module }}</td>
                         <td>@{{ table.table }}</td>
                         <td>
+                            <ze-btn class="pull-right text-info" ze-modalform="edit"
+                                    data-edit="table"  id="updateTable" fa="pencil"
+                                    data-template="templateUpdateTable"
+                                    data-title="Modifier la table"
+                                    ng-model="table" color="transparent"
+                                    always-on="true" >
+                            </ze-btn>
+                        </td>
+                        <td>
                             <span ng-click="deleteTableFromRequest(table)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette table"></span>
                         </td>
                     </tr>
@@ -523,7 +532,7 @@
                                 <strong>Valeur / Intervalle</strong>
                             </div>
                             <div class="col-md-8">
-                                <input ng-class="valueModalAddCondition==null||valueModalAddCondition==''?'errorSelect form-control':'form-control'" type="text" class="form-control" value="" ng-model="valueModalAddCondition" required />
+                                <input placeholder="Séparateur si intervalle : virgule" ng-class="valueModalAddCondition==null||valueModalAddCondition==''?'errorSelect form-control':'form-control'" type="text" class="form-control" value="" ng-model="valueModalAddCondition" required />
                             </div>
                         </div>
 

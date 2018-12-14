@@ -13,7 +13,19 @@ class RequetesGenerees extends Controller
 {
     public function context()
     {
+        $tabModel = ModelRequest::getRequestContent();
 
+        $modules = array();
+        foreach ($tabModel as $dataModule) {
+            $std = new \stdClass();
+            $std->id = $dataModule['module_id'];
+            $std->label = $dataModule['module_name'];
+            $modules[] = $std;
+        }
+
+        echo json_encode(array(
+            'modules' => $modules
+        ));
     }
 
     public function getModules()
@@ -274,7 +286,29 @@ class RequetesGenerees extends Controller
          */
         if (count($std_requete->conditions)) {
             foreach ($std_requete->conditions as $condition) {
-                $requete_finale = $requete_finale->where($condition->field, $condition->operation, $condition->value);
+                if (strpos('LIKE', $condition->operation)) {
+                    switch ($condition->operation) {
+                        case 'LIKE %valeur' :
+                            $requete_finale = $requete_finale->where($condition->field, 'like','%' . $condition->value);
+                            break;
+                        case 'LIKE valeur%' :
+                            $requete_finale = $requete_finale->where($condition->field, 'like',$condition->value . '%');
+                            break;
+                        case 'LIKE %valeur%' :
+                            $requete_finale = $requete_finale->where($condition->field, 'like', '%' . $condition->value . '%');
+                            break;
+                        default :
+                            break;
+                    }
+                } elseif ($condition->operation === 'IN') {
+                    $requete_finale = $requete_finale->whereIn($condition->field, is_array($condition->value) ? $condition->value : explode(',', $condition->value));
+                } elseif ($condition->operation === 'BETWEEN') {
+                    if (is_array($condition->value) && sizeof($condition->value) === 2) {
+                        $requete_finale = $requete_finale->whereBetween($condition->field, $condition->value);
+                    } elseif (!is_array($condition->value) && sizeof(explode(',', $condition->value)) === 2 )  {
+                        $requete_finale = $requete_finale->whereBetween($condition->field, explode(',', $condition->value));
+                    }
+                }
             }
         }
 
@@ -310,154 +344,6 @@ class RequetesGenerees extends Controller
         ));
 
 
-    }
-
-    public function deleteElement(Request $request)
-    {
-        $id = $request->input('id_requete_generee', 0);
-        $elemDelete = $request->input('elem', '');
-        $typeDelete = $request->input('type', '');
-
-        $reqGenModel = ReqGenModel::where('id', $id)->first();
-        $tab_contenu = json_decode($reqGenModel->contenu);
-
-        if ($typeDelete !== '') {
-
-            switch ($typeDelete) {
-
-                case 'table' : {
-
-                    // Suppression d'une table avant la jointure interdite
-                    if (count($tab_contenu->jointures)) {
-                        foreach ($tab_contenu->jointures as $join) {
-                            if ($join->table_left->table == $elemDelete || $join->table_right->table == $elemDelete) {
-                                echo 'Impossible de supprimer cette table, car elle est utilisée dans une jointure.';
-                                exit();
-                            }
-                        }
-                    }
-
-                    $tab_contenu->tables = $this->deleteTable($tab_contenu->tables, $elemDelete, 'table');
-                    $tab_contenu->fields = $this->deleteTable($tab_contenu->fields, $elemDelete, 'table');
-                    $tab_contenu->affichages = $this->deleteTable($tab_contenu->affichages, $elemDelete, 'field');
-                    $tab_contenu->conditions = $this->deleteTable($tab_contenu->conditions, $elemDelete, 'field');
-                    $tab_contenu->groupsBy = $this->deleteTable($tab_contenu->groupsBy, $elemDelete, 'field');
-                    $tab_contenu->ordersBy = $this->deleteTable($tab_contenu->ordersBy, $elemDelete, 'field');
-
-                    break;
-                }
-
-                case 'jointure' : {
-
-                    // TODO : delete jointure here
-                    // TODO : delete jointure here
-                    // TODO : delete jointure here
-                    // TODO : delete jointure here
-                    // TODO : delete jointure here
-                    // TODO : delete jointure here
-                    // TODO : delete jointure here
-
-                    $tab_contenu->affichages = $this->deleteTable($tab_contenu->affichages, $elemDelete, 'field');
-                    $tab_contenu->conditions = $this->deleteTable($tab_contenu->conditions, $elemDelete, 'field');
-                    $tab_contenu->groupsBy = $this->deleteTable($tab_contenu->groupsBy, $elemDelete, 'field');
-                    $tab_contenu->ordersBy = $this->deleteTable($tab_contenu->ordersBy, $elemDelete, 'field');
-
-                    break;
-                }
-
-                case 'affichage' : {
-
-                    $tab_contenu->affichages = $this->deleteItem(json_decode(json_encode($tab_contenu->affichages), true), $elemDelete);
-                    break;
-                }
-
-                case 'condition' :
-                    $tab_contenu->conditions = $this->deleteItem(json_decode(json_encode($tab_contenu->conditions), true), $elemDelete);
-                    break;
-
-                case 'groupBY' :
-                    $tab_contenu->groupsBy = $this->deleteItem(json_decode(json_encode($tab_contenu->groupsBy), true), $elemDelete);
-                    break;
-
-                case 'orderBy' :
-                    $tab_contenu->ordersBy = $this->deleteItem(json_decode(json_encode($tab_contenu->ordersBy), true), $elemDelete);
-                    break;
-
-                case 'limit' : {
-
-                    if (count($tab_contenu->limits)) {
-                        $tab_contenu->limits = array();
-                    }
-
-                    break;
-                }
-
-                case 'pagination' :
-                    {
-                        // TODO : pagination
-                        // TODO : pagination
-                        // TODO : pagination
-                        // TODO : pagination
-                        // TODO : pagination
-                        break;
-                    }
-
-                default:
-                    break;
-            }
-
-            // Update Json in DB
-            $reqGenModel->contenu = json_encode($tab_contenu);
-            $reqGenModel->save();
-        }
-
-        echo 'Element of request deleted';
-    }
-
-    /**
-     * @param $array : Collection of data where $element will be deleted
-     * @param $element : Element, data to delete
-     * @param $attribute : Type of element (Table, jointure, affichage, condition....)
-     * @return int : status of delete action
-     */
-    private function deleteTable($array, $element, $attribute)
-    {
-        $i = 0;
-        foreach ($array as $item) {
-
-            if (isset($item->$attribute)) {
-
-                $explode = explode('.', $item->$attribute);
-                if ($item->$attribute == $element || $explode[0] == $element) {
-                    unset($array[$i]);
-                    break;
-                }
-            }
-
-            $i++;
-        }
-
-        // Return new array updated
-        return $array;
-    }
-
-    /**
-     * @param $array : Collection of data where $element will be deleted
-     * @param $element : Element, data to delete
-     * @return int : status of delete action
-     */
-    private function deleteItem($array, $element)
-    {
-        foreach ($array as $key => $value) {
-
-            if (isset($value['field']) && $value['field'] == $element) {
-                unset($array[$key]);
-                break;
-            }
-        }
-
-        // Return new array updated
-        return $array;
     }
 
 };
