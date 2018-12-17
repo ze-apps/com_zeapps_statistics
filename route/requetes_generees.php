@@ -16,6 +16,7 @@ Routeur::post("/com_zeapps_statistics/requetes_generees/context/", 'App\\com_zea
 Routeur::get('/com_zeapps_statistics/requetes_generees/modules', 'App\\com_zeapps_statistics\\Controllers\\RequetesGenerees@getModules');
 Routeur::get('/com_zeapps_statistics/requetes_generees/tables/{argModule}/{argWithFields}', 'App\\com_zeapps_statistics\\Controllers\\RequetesGenerees@getTables');
 Routeur::get('/com_zeapps_statistics/requetes_generees/fields/{argModule}/{argTable}', 'App\\com_zeapps_statistics\\Controllers\\RequetesGenerees@getFields');
+Routeur::get('/com_zeapps_statistics/requetes_generees/table/{argName}', 'App\\com_zeapps_statistics\\Controllers\\RequetesGenerees@getTableFromName');
 Routeur::post("/com_zeapps_statistics/requetes_generees/save", 'App\\com_zeapps_statistics\\Controllers\\RequetesGenerees@save');
 
 

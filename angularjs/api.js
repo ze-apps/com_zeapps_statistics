@@ -14,6 +14,7 @@ app.config(["$provide",
 					modules : get_modules,
 					tables : get_tables,
                     tablesWithFields : get_tables_with_fields,
+                    tableFromName : get_table_from_name,
 					fields : get_fields,
 
                     selectTables : selectTables,
@@ -75,6 +76,10 @@ app.config(["$provide",
             function get_tables_with_fields(module)
             {
                 return zeHttp.get("/com_zeapps_statistics/requetes_generees/tables/" + module+"/true");
+            }
+            function get_table_from_name(name)
+            {
+                return zeHttp.get("/com_zeapps_statistics/requetes_generees/table/" + name);
             }
             function get_fields(module, table)
             {

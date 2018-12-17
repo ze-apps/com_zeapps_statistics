@@ -71,6 +71,30 @@ class RequetesGenerees extends Controller
         ));
     }
 
+    public function getTableFromName(Request $request)
+    {
+        $argName = $request->input('argName', "");
+
+        $tabModel = ModelRequest::getRequestContent();
+
+        $json = array();
+
+        foreach ($tabModel as $module => $dataModule) {
+
+            $tables = $dataModule["tables"];
+            foreach ($tables as $table) {
+                if ($table->table == $argName) {
+                    $json[] = array("sqlName" => $table->table, "label" => $table->tableLabel, "fields" => array_keys($table->fields));
+                    break;
+                }
+            }
+        }
+
+        echo json_encode(array(
+            'table' => $json
+        ));
+    }
+
     public function getFields(Request $request)
     {
         $argModule = $request->input('argModule', "");

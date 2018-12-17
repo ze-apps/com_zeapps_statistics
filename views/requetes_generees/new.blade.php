@@ -23,8 +23,16 @@
     <div class="row" style="margin-top: 10px; margin-bottom: 10px">
         <div class="col-md-12">
             <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Table(s)
-                <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalTable" hint="Ajouter" always-on="true"
-                        href="#modalTable" data-toggle="modal" ></ze-btn>
+                <ze-btn class="pull-right"
+                        id="ajout"
+                        fa="plus"
+                        color="success open-modalTable"
+                        hint="Ajouter"
+                        always-on="true"
+                        href="#modalTable"
+                        data-toggle="modal"
+                        ng-click="editTable(null)"
+                ></ze-btn>
             </h4>
         </div>
     </div>
@@ -43,13 +51,15 @@
                         <td>@{{ table.module }}</td>
                         <td>@{{ table.table }}</td>
                         <td>
-                            <ze-btn class="pull-right text-info" ze-modalform="edit"
-                                    data-edit="table"  id="updateTable" fa="pencil"
-                                    data-template="templateUpdateTable"
-                                    data-title="Modifier la table"
-                                    ng-model="table" color="transparent"
-                                    always-on="true" >
-                            </ze-btn>
+                            <ze-btn class="pull-right text-info"
+                                    id="edit_table"
+                                    fa="pencil"
+                                    color="transparent open-modalTable"
+                                    always-on="true"
+                                    href="#modalTable"
+                                    data-toggle="modal"
+                                    ng-click="editTable(table)"
+                            ></ze-btn>
                         </td>
                         <td>
                             <span ng-click="deleteTableFromRequest(table)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette table"></span>
@@ -123,8 +133,16 @@
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Affichage
-                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalAffichage" hint="Ajouter" always-on="true"
-                            href="#modalAffichage" data-toggle="modal" ></ze-btn>
+                    <ze-btn class="pull-right"
+                            id="ajout"
+                            fa="plus"
+                            color="success open-modalAffichage"
+                            $hint="Ajouter"
+                            always-on="true"
+                            href="#modalAffichage"
+                            data-toggle="modal"
+                            ng-click="editAffichage(null)" >
+                    </ze-btn>
                 </h4>
             </div>
         </div>
@@ -143,7 +161,18 @@
                             <td>@{{ affichage.field }}</td>
                             <td>@{{ affichage.operation }}</td>
                             <td>
-                                <span ng-click="deleteAffichageFromRequest(affichage)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette sélection"></span>
+                                <ze-btn class="pull-right text-info"
+                                        id="edit_affichage"
+                                        fa="pencil"
+                                        color="transparent open-modalAffichage"
+                                        always-on="true"
+                                        href="#modalAffichage"
+                                        data-toggle="modal"
+                                        ng-click="editAffichage(affichage)"
+                                ></ze-btn>
+                            </td>
+                            <td>
+                                <span ng-click="deleteAffichageFromRequest(affichage)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cet affichage"></span>
                             </td>
                         </tr>
                     </tbody>
@@ -160,8 +189,16 @@
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Condition(s)
-                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalCondition" hint="Ajouter" always-on="true"
-                            href="#modalCondition" data-toggle="modal" ></ze-btn>
+                    <ze-btn
+                            class="pull-right" i
+                            d="ajout"
+                            fa="plus"
+                            color="success open-modalCondition"
+                            hint="Ajouter"
+                            always-on="true"
+                            href="#modalCondition"
+                            data-toggle="modal"
+                            ng-click="editCondition(null)" ></ze-btn>
                 </h4>
             </div>
         </div>
@@ -182,6 +219,17 @@
                             <td>@{{ condition.operation }}</td>
                             <td>@{{ condition.value }}</td>
                             <td>
+                                <ze-btn class="pull-right text-info"
+                                        id="edit_condition"
+                                        fa="pencil"
+                                        color="transparent open-modalCondition"
+                                        always-on="true"
+                                        href="#modalCondition"
+                                        data-toggle="modal"
+                                        ng-click="editCondition(condition)"
+                                ></ze-btn>
+                            </td>
+                            <td>
                                 <span ng-click="deleteConditionFromRequest(condition)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette condition"></span>
                             </td>
                         </tr>
@@ -199,8 +247,16 @@
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Groupé par
-                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalGroupePar" hint="Ajouter" always-on="true"
-                            href="#modalGroupePar" data-toggle="modal" ></ze-btn>
+                    <ze-btn
+                            class="pull-right"
+                            id="ajout"
+                            fa="plus"
+                            color="success open-modalGroupePar"
+                            hint="Ajouter"
+                            always-on="true"
+                            href="#modalGroupePar"
+                            data-toggle="modal"
+                            ng-click="editGroupby(null)"></ze-btn>
                 </h4>
             </div>
         </div>
@@ -216,6 +272,17 @@
                     <tbody>
                         <tr ng-repeat="group in groupsBy">
                             <td>@{{ group.field }}</td>
+                            <td>
+                                <ze-btn class="pull-right text-info"
+                                        id="edit_groupby"
+                                        fa="pencil"
+                                        color="transparent open-modalGroupePar"
+                                        always-on="true"
+                                        href="#modalGroupePar"
+                                        data-toggle="modal"
+                                        ng-click="editGroupby(group)"
+                                ></ze-btn>
+                            </td>
                             <td>
                                 <span ng-click="deleteGroupByFromRequest(group)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer ce groupement"></span>
                             </td>
@@ -234,8 +301,15 @@
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Ordonné par
-                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalOrdonnePar" hint="Ajouter" always-on="true"
-                            href="#modalOrdonnePar" data-toggle="modal" ></ze-btn>
+                    <ze-btn class="pull-right"
+                            id="ajout"
+                            fa="plus"
+                            color="success open-modalOrdonnePar"
+                            hint="Ajouter"
+                            always-on="true"
+                            href="#modalOrdonnePar"
+                            data-toggle="modal"
+                            ng-click="editOrderby(null)"></ze-btn>
                 </h4>
             </div>
         </div>
@@ -253,6 +327,17 @@
                         <tr ng-repeat="order in ordersBy">
                             <td>@{{ order.field }}</td>
                             <td>@{{ order.sens }}</td>
+                            <td>
+                                <ze-btn class="pull-right text-info"
+                                        id="edit_orderby"
+                                        fa="pencil"
+                                        color="transparent open-modalOrdonnePar"
+                                        always-on="true"
+                                        href="#modalOrdonnePar"
+                                        data-toggle="modal"
+                                        ng-click="editOrderby(order)"
+                                ></ze-btn>
+                            </td>
                             <td>
                                 <span ng-click="deleteOrderByFromRequest(order)" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer ce tri"></span>
                             </td>
@@ -340,12 +425,11 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Nouvelle table
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                        <h4>Table
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </h4>
                 </div>
                 <div class="modal-body">
 
@@ -379,7 +463,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" id="btnAddTables" ng-click="addTable()" >Valider</button>
+                    <button type="button" class="btn btn-success" id="btnAddTables" ng-click="saveTable()" >Valider</button>
                 </div>
 
             </div>
@@ -395,12 +479,11 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Nouvel affichage
+                    <h4>Affichage
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </h4>
                 </div>
 
                 <div class="modal-body">
@@ -453,7 +536,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" ng-click="addAffichage()">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="saveAffichage()">Valider</button>
                 </div>
 
             </div>
@@ -542,7 +625,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" ng-click="addCondition()">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="saveCondition()">Valider</button>
                 </div>
 
             </div>
@@ -589,7 +672,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" ng-click="addGroupBy()">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="saveGroupBy()">Valider</button>
                 </div>
 
             </div>
@@ -653,7 +736,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" ng-click="addOrderBy()">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="saveOrderBy()">Valider</button>
                 </div>
 
             </div>
@@ -761,66 +844,6 @@
      ---------------->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"></script>
 
-    <script type="text/javascript">
-
-        // var tables = [];
-        //
-        // function supprimerCetteJointure(id_span_jointure)
-        // {
-        //     console.log(id_span_jointure);
-        //     $('div#jointure_'+id_span_jointure).remove();
-        //     /*if (nbJointures >= 1) {
-        //         nbJointures--;
-        //     }*/
-        // }
-        //
-        // // Tables currently added
-        // function getOptionsSelectsTables()
-        // {
-        //     var html_tables = '';
-        //     tables.forEach(function (elem) {
-        //         html_tables += '<option>' + elem + '</option>';
-        //     });
-        //     return html_tables;
-        // }
-        //
-        // function getFieldsOfSelectedTable(id_select)
-        // {
-        //     /*
-        //     var nom_table_selectionnee = $('#'+id_select+' :selected').text();
-        //     console.log(nom_table_selectionnee);
-        //
-        //     $("#selectHiddenTables option").each(function()
-        //     {
-        //         if ($(this).text() == nom_table_selectionnee) {
-        //             console.log($(this).bind().innerHTML);
-        //         }
-        //         // console.log($(this).val());
-        //         // console.log($(this).bind());
-        //     });*/
-        // }
-        //
-        // $(document).ready(function() {
-        //
-        //     $(this).on("click", ".open-modalAffichage", function () {
-        //
-        //     });
-        //
-        //     $(this).on("click", ".open-modalCondition", function () {
-        //
-        //     });
-        //
-        //     $(this).on("click", ".open-modalGroupePar", function () {
-        //
-        //     });
-        //
-        //     $(this).on("click", ".open-modalOrdonnePar", function () {
-        //
-        //     });
-        //
-        // });
-
-    </script>
 
     <!-------------
           CSS

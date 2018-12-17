@@ -5,7 +5,6 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
         menu("com_zeapps_statistics", "com_zeapps_statistics_requeteur");
 
 
-
         // Load all data
         $scope.loadModules = loadModules;
         $scope.loadTables = loadTables;
@@ -64,30 +63,37 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
         zhttp.statistics.requetes_generees.context().then(function (response) {
             if (response.status == 200) {
                 $scope.modules = response.data.modules;
-                console.log(response.data.modules);
             }
         });
 
 
         // Select table drop-downs
-        function loadFields(table)
+        function loadFields(table, next)
         {
             if (table) {
                 for (var i = 0; i < $scope.fields.length; i++) {
                     if ($scope.fields[i].table == table.table) {
                         $scope.fieldsToAdd = $scope.fields[i].fields;
+
+                        if (next) {
+                            next();
+                        }
                     }
                 }
             }
         }
 
         // Get tables of a module
-        function loadTables(module)
+        function loadTables(module, next)
         {
             $scope.tablesToAdd = [];
             zhttp.statistics.requetes_generees.tablesWithFields(module).then(function (response) {
                 if (response.status === 200) {
                     $scope.tablesToAdd = response.data.tables;
+
+                    if (next) {
+                        next() ;
+                    }
                 }
             });
         }
@@ -158,8 +164,22 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
             });
         }
 
+        // *************************************************************
 
-        $scope.addTable = function () {
+        var tableEdit = null ;
+        $scope.editTable = function (table) {
+            tableEdit = table ;
+
+            if (table) {
+                $scope.moduleModelAddTable = table.module ;
+
+                $scope.loadTables($scope.moduleModelAddTable, function () {
+                    $scope.tableModalAddTable = table.table ;
+                });
+            }
+        };
+
+        $scope.saveTable = function () {
 
             if ($scope.moduleModelAddTable && $scope.tableModalAddTable && $scope.moduleModelAddTable != '' && $scope.tableModalAddTable != '') {
 
@@ -181,7 +201,18 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                     zhttp.statistics.requetes_generees.fields($scope.moduleModelAddTable, $scope.tableModalAddTable).then(function (response) {
                         if (response.status === 200) {
                             $scope.fields.push({table: $scope.tableModalAddTable, fields:response.data.fields});
-                            $scope.tables.push({module: $scope.moduleModelAddTable, table: $scope.tableModalAddTable, fields: response.data.fields});
+
+                            if (tableEdit != null) {
+                                tableEdit.module = $scope.moduleModelAddTable ;
+                                tableEdit.table = $scope.tableModalAddTable ;
+                                tableEdit.fields = response.data.fields ;
+                            } else {
+                                $scope.tables.push({
+                                    module: $scope.moduleModelAddTable,
+                                    table: $scope.tableModalAddTable,
+                                    fields: response.data.fields
+                                });
+                            }
 
                             // Update list of folders of group by and order by
                             Object.keys(response.data.fields).forEach(function(elem) {
@@ -195,7 +226,31 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
             }
         };
 
-        $scope.addAffichage = function () {
+        // *************************************************************
+
+        var affichageEdit = null ;
+        $scope.editAffichage = function (affichage) {
+
+            affichageEdit = affichage ;
+
+            if (affichage) {
+
+                var nameTable = affichage.field.split('.');
+
+                for (var i = 0; i < $scope.tables.length; i++) {
+                    if ($scope.tables[i].table == nameTable[0]) {
+                        $scope.tableModelAddField = $scope.tables[i];
+
+                        $scope.loadFields($scope.tableModelAddField, function () {
+                            $scope.fieldModelAddField = nameTable[1] ;
+                            $scope.operationModalAddField = affichage.operation;
+                        });
+                    }
+                }
+            }
+        };
+
+        $scope.saveAffichage = function () {
 
             if ($scope.fieldModelAddField && $scope.tableModelAddField && $scope.fieldModelAddField != '' && $scope.tableModelAddField != '') {
 
@@ -221,15 +276,48 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 }
 
                 if (possibleAjout) {
-                    arrAffichage.push({field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField, operation: $scope.operationModalAddField});
-                    $scope.affichages = arrAffichage;
+
+                    if (affichageEdit != null) {
+                        affichageEdit.field = $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField ;
+                        affichageEdit.operation = $scope.tableModalAddTable ;
+                    } else {
+                        arrAffichage.push({
+                            field: $scope.tableModelAddField.table + '.' + $scope.fieldModelAddField,
+                            operation: $scope.operationModalAddField
+                        });
+                        $scope.affichages = arrAffichage;
+                    }
                 }
 
                 return true;
             }
         };
 
-        $scope.addCondition = function () {
+        // *************************************************************
+
+        var conditionEdit = null ;
+        $scope.editCondition = function (condition) {
+            conditionEdit = condition ;
+
+            if (condition) {
+
+                var nameTable = condition.field.split('.');
+
+                for (var i = 0; i < $scope.tables.length; i++) {
+                    if ($scope.tables[i].table == nameTable[0]) {
+                        $scope.tableModelAddCondition = $scope.tables[i];
+
+                        $scope.loadFields($scope.tableModelAddCondition, function () {
+                            $scope.fieldModelAddCondition = nameTable[1] ;
+                            $scope.operationModalAddCondition = condition.operation;
+                            $scope.valueModalAddCondition = condition.value;
+                        });
+                    }
+                }
+            }
+        };
+
+        $scope.saveCondition = function () {
 
             if ($scope.tableModelAddCondition && $scope.fieldModelAddCondition && $scope.operationModalAddCondition && $scope.valueModalAddCondition &&
                 $scope.tableModelAddCondition != '' && $scope.fieldModelAddCondition != '' &&  $scope.operationModalAddCondition != '' && $scope.valueModalAddCondition != '') {
@@ -237,68 +325,153 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 // Close modal and append data
                 $('#modalCondition').modal('hide');
 
+                // Json to array
+                var arrCondition = $.map($scope.conditions, function(el, i) {
+                    return el;
+                });
+
                 // test si la table est déjà présente
                 var possibleAjout = true;
-                for (var i = 0; i < $scope.conditions.length; i++) {
 
-                    if ($scope.conditions[i].field == $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition && $scope.conditions[i].operation == $scope.operationModalAddCondition) {
+                for (var i = 0; i < arrCondition.length; i++) {
+
+                    if (arrCondition[i].field == $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition &&
+                        arrCondition[i].operation == $scope.operationModalAddCondition &&
+                        arrCondition[i].value == $scope.valueModalAddCondition) {
                         possibleAjout = false ;
                         break;
                     }
                 }
 
                 if (possibleAjout) {
-                    $scope.conditions.push({field: $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition, operation: $scope.operationModalAddCondition, value: $scope.valueModalAddCondition});
+
+                    if (conditionEdit != null) {
+                        conditionEdit.field = $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition ;
+                        conditionEdit.operation = $scope.operationModalAddCondition ;
+                        conditionEdit.value = $scope.valueModalAddCondition ;
+                    } else {
+                        arrCondition.push({
+                            field: $scope.tableModelAddCondition.table + '.' + $scope.fieldModelAddCondition,
+                            operation: $scope.operationModalAddCondition,
+                            value: $scope.valueModalAddCondition});
+                        $scope.conditions = arrCondition;
+                    }
                 }
 
                 return true;
             }
         };
 
-        $scope.addGroupBy = function () {
+        // *************************************************************
+
+        var groupbyEdit = null ;
+        $scope.editGroupby = function (groupby) {
+            groupbyEdit = groupby ;
+
+            if (groupby) {
+
+                var nameTable = groupby.field.split('.');
+
+                for (var i = 0; i < $scope.tables.length; i++) {
+                    if ($scope.tables[i].table == nameTable[0]) {
+                        $scope.fieldModelAddGroupBy = $scope.tables[i].table + '.' + nameTable[1];
+                    }
+                }
+            }
+        };
+
+        $scope.saveGroupBy = function () {
 
             if ($scope.fieldModelAddGroupBy && $scope.fieldModelAddGroupBy != '') {
 
                 // Close modal and append data
                 $('#modalGroupePar').modal('hide');
 
+                // Json to array
+                var arrGroupsBy = $.map($scope.groupsBy, function(el, i) {
+                    return el;
+                });
+
                 // test si la table est déjà présente
                 var possibleAjout = true;
-                for (var i = 0; i < $scope.groupsBy.length; i++) {
+                for (var i = 0; i < arrGroupsBy.length; i++) {
 
-                    if ($scope.groupsBy[i].field == $scope.fieldModelAddGroupBy) {
+                    if (arrGroupsBy[i].field == $scope.fieldModelAddGroupBy) {
                         possibleAjout = false ;
                         break;
                     }
                 }
 
                 if (possibleAjout) {
-                    $scope.groupsBy.push({field: $scope.fieldModelAddGroupBy});
+
+                    if (groupbyEdit != null) {
+                        groupbyEdit.field = $scope.fieldModelAddGroupBy ;
+                    } else {
+                        arrGroupsBy.push({
+                            field: $scope.fieldModelAddGroupBy});
+                        $scope.groupsBy = arrGroupsBy;
+                    }
                 }
 
                 return true;
             }
         };
 
-        $scope.addOrderBy = function () {
+        // *************************************************************
+
+        var orderbyEdit = null ;
+        $scope.editOrderby = function (orderby) {
+            orderbyEdit = orderby ;
+
+            if (orderby) {
+
+                var nameTable = orderby.field.split('.');
+
+                for (var i = 0; i < $scope.tables.length; i++) {
+                    if ($scope.tables[i].table == nameTable[0]) {
+                        $scope.fieldModelAddOrderBy = $scope.tables[i].table + '.' + nameTable[1];
+                        $scope.fieldSensAddOrderBy = orderby.sens;
+                    }
+                }
+            }
+        };
+
+        $scope.saveOrderBy = function () {
 
             if ($scope.fieldModelAddOrderBy && $scope.fieldModelAddOrderBy != '' && $scope.fieldSensAddOrderBy && $scope.fieldSensAddOrderBy != '') {
+
+                console.log('******* TODO ****** permettre lajoutr de plusieurs order by');
 
                 // Close modal and append data
                 $('#modalOrdonnePar').modal('hide');
 
+                // Json to array
+                var arrOrdersBy = $.map($scope.ordersBy, function(el, i) {
+                    return el;
+                });
+
                 // test si la table est déjà présente
                 var possibleAjout = true;
-                for (var i = 0; i < $scope.ordersBy.length; i++) {
+                for (var i = 0; i < arrOrdersBy.length; i++) {
 
-                    if ($scope.ordersBy[i].field == $scope.fieldModelAddOrderBy) {
+                    if (arrOrdersBy[i].field == $scope.fieldModelAddOrderBy &&
+                        arrOrdersBy[i].sens == $scope.fieldSensAddOrderBy) {
                         possibleAjout = false ;
                         break;
                     }
                 }
 
                 if (possibleAjout) {
-                    $scope.ordersBy.push({field: $scope.fieldModelAddOrderBy, sens: $scope.fieldSensAddOrderBy});
+
+                    if (orderbyEdit != null) {
+                        orderbyEdit.field = $scope.fieldModelAddOrderBy ;
+                        orderbyEdit.sens = $scope.fieldSensAddOrderBy ;
+                    } else {
+                        arrOrdersBy.push({
+                            field: $scope.fieldModelAddOrderBy,
+                            sens: $scope.fieldSensAddOrderBy});
+                        $scope.groupsBy = arrOrdersBy;
+                    }
                 }
 
                 return true;
