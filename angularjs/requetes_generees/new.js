@@ -112,7 +112,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                     $scope.affichages = dataJson.affichages;
                     $scope.conditions = dataJson.conditions;
                     $scope.limits = dataJson.limits;
-                    $scope.paginations = dataJson.paginations;
+                    $scope.paginations = dataJson.pagination;
 
                     $scope.groupsBy = dataJson.groupsBy;
                     $scope.ordersBy = dataJson.ordersBy;
@@ -440,8 +440,6 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
             if ($scope.fieldModelAddOrderBy && $scope.fieldModelAddOrderBy != '' && $scope.fieldSensAddOrderBy && $scope.fieldSensAddOrderBy != '') {
 
-                console.log('******* TODO ****** permettre lajoutr de plusieurs order by');
-
                 // Close modal and append data
                 $('#modalOrdonnePar').modal('hide');
 
@@ -470,7 +468,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                         arrOrdersBy.push({
                             field: $scope.fieldModelAddOrderBy,
                             sens: $scope.fieldSensAddOrderBy});
-                        $scope.groupsBy = arrOrdersBy;
+                        $scope.ordersBy = arrOrdersBy;
                     }
                 }
 
@@ -478,7 +476,20 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
             }
         };
 
-        $scope.addLimit = function() {
+        // *************************************************************
+
+        var limitEdit = null ;
+        $scope.editLimit = function (limit) {
+
+            limitEdit = limit ;
+
+            if (limit) {
+                $scope.limits = [limit];
+                $scope.valueAddLimit = limit;
+            }
+        };
+
+        $scope.saveLimit = function() {
 
             // Validation
             $scope.valueAddLimit = $scope.valueAddLimit.replace('.', ',');
@@ -500,7 +511,8 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                     // Close modal and append data
                     $('#modalLimit').modal('hide');
 
-                    if ($scope.limits.length === 0) {
+                    if ($scope.limits.length === 0 || limitEdit) {
+                        $scope.limits = [];
                         $scope.limits.push(_split[0] + ',' + _split[1]);
                     }
 
@@ -512,7 +524,8 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 // Close modal and append data
                 $('#modalLimit').modal('hide');
 
-                if ($scope.limits.length === 0) {
+                if ($scope.limits.length === 0 || limitEdit) {
+                    $scope.limits = [];
                     $scope.limits.push($scope.valueAddLimit);
                 }
 
@@ -521,14 +534,28 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
 
         };
 
-        $scope.addPagination = function () {
+        // *************************************************************
+
+        var paginationEdit = null ;
+        $scope.editPagination = function (pagination) {
+
+            paginationEdit = pagination ;
+
+            if (pagination) {
+                $scope.paginations = [pagination];
+                $scope.fieldModelPagination = pagination;
+            }
+        };
+
+        $scope.savePagination = function () {
 
             if ($scope.fieldModelPagination && $scope.fieldModelPagination != '') {
 
                 // Close modal and append data
                 $('#modalPagination').modal('hide');
 
-                if ($scope.paginations.length === 0) {
+                if ($scope.paginations.length === 0 || paginationEdit) {
+                    $scope.paginations = [];
                     $scope.paginations.push($scope.fieldModelPagination);
                 }
 
@@ -562,7 +589,8 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
         $scope.saveRequest = function() {
 
             var arr_request = [] ;
-            var validation = true;
+            var validation_tables_et_affichages = true;
+            var validation_table_sans_jointure = true;
 
             // Elements of request
             arr_request['tables'] = $scope.tables ;
@@ -573,13 +601,7 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
             arr_request['groupsBy'] = $scope.groupsBy ;
             arr_request['ordersBy'] = $scope.ordersBy ;
             arr_request['limits'] = $scope.limits ;
-            arr_request['pagination'] = ['Non'] ;
-            // TODO : Pagination à faire
-            // TODO : Pagination à faire
-            // TODO : Pagination à faire
-            // TODO : Pagination à faire
-            // TODO : Pagination à faire
-            // TODO : Pagination à faire
+            arr_request['pagination'] = $scope.paginations ;
 
             var jsonObject = {
                 'id' : $scope.id,
@@ -587,7 +609,41 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 'contenu' : Object.assign({}, arr_request)
             };
 
-            if (validation) {
+            // All tables must be used in joins
+            if ($scope.tables.length > 0 && $scope.affichages.length > 0 ) {
+
+                var arrTablesOfJointures = [];
+                $scope.jointures.forEach(function(elem) {
+
+                    if (arrTablesOfJointures.includes(elem.table_right.table) == false) {
+                        arrTablesOfJointures.push(elem.table_right.table);
+                    }
+
+                    if (arrTablesOfJointures.includes(elem.table_left.table) == false) {
+                        arrTablesOfJointures.push(elem.table_left.table);
+                    }
+                });
+
+                if (arrTablesOfJointures.length == 0) {
+                    validation_table_sans_jointure = false;
+                }
+
+                $scope.tables.forEach(function(elem) {
+
+                    if (arrTablesOfJointures.includes(elem.table) == false &&
+                        arrTablesOfJointures.includes(elem.table) == false) {
+
+                        validation_table_sans_jointure = false;
+                    }
+
+                });
+
+            } else if ($scope.tables.length == 0 || $scope.affichages.length == 0) {
+                validation_tables_et_affichages = false;
+            }
+
+            if (validation_tables_et_affichages && validation_table_sans_jointure) {
+
                 zhttp.statistics.requetes_generees.save(jsonObject).then(function (response) {
                     if (response.data && response.data !== "false") {
                         if (isNaN(response.data) === false && response.data > 0) {
@@ -596,8 +652,17 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                         }
                     }
                 });
+
+                return true;
             } else {
-                alert('Requête invalide, car au moins une des clauses suivantes n\'a pas été renseignée : \r\n - Table(s) \n - Affichage.');
+
+                if (!validation_tables_et_affichages) {
+                    alert('Requête invalide, car au moins une des clauses suivantes n\'a pas été renseignée : \r\n - Table(s) \n - Affichage.');
+                } else if (!validation_table_sans_jointure) {
+                    alert('Requête invalide, car au moins une des tables n\'est pas utilisée dans une jointure.');
+                }
+
+                return false;
             }
 
         };
@@ -618,74 +683,9 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                     }
                 }
 
-                for (var i=0; i < $scope.affichages.length; i++) {
-                    var _table = $scope.affichages[i].field.split(".");
-                    if ( _table[0] === jointure.table_left.table) {
-                        $scope.affichages.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.conditions.length; i++) {
-                    var _table = $scope.conditions[i].field.split(".");
-                    if ( _table[0] === jointure.table_left.table) {
-                        $scope .conditions.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.groupsBy.length; i++) {
-                    var _table = $scope.groupsBy[i].field.split(".");
-                    if ( _table[0] === jointure.table_left.table) {
-                        $scope.groupsBy.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.ordersBy.length; i++) {
-                    var _table = $scope.ordersBy[i].field.split(".");
-                    if ( _table[0] === jointure.table_left.table) {
-                        $scope.ordersBy.splice(i, 1);
-                        break;
-                    }
-                }
-
-
                 for (var i=0; i < $scope.jointures.length; i++) {
                     if ($scope.jointures[i].$$hashKey === jointure.$$hashKey) {
                         $scope.jointures.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.affichages.length; i++) {
-                    var _table = $scope.affichages[i].field.split(".");
-                    if ( _table[0] === jointure.table_right.table) {
-                        $scope.affichages.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.conditions.length; i++) {
-                    var _table = $scope.conditions[i].field.split(".");
-                    if ( _table[0] === jointure.table_right.table) {
-                        $scope.conditions.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.groupsBy.length; i++) {
-                    var _table = $scope.groupsBy[i].field.split(".");
-                    if ( _table[0] === jointure.table_right.table) {
-                        $scope.groupsBy.splice(i, 1);
-                        break;
-                    }
-                }
-
-                for (var i=0; i < $scope.ordersBy.length; i++) {
-                    var _table = $scope.ordersBy[i].field.split(".");
-                    if ( _table[0] === jointure.table_right.table) {
-                        $scope.ordersBy.splice(i, 1);
                         break;
                     }
                 }
@@ -710,51 +710,57 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 } else {
 
                     // Remove data from DOM
+                    var tableDeleted = false;
                     for (var i = 0; i < $scope.tables.length; i++) {
                         if ($scope.tables[i].table === table.table) {
                             $scope.tables.splice(i, 1);
+                            tableDeleted = true;
                             break;
                         }
                     }
 
-                    for (var i = 0; i < $scope.fields.length; i++) {
-                        if ($scope.fields[i].table === table.table) {
-                            $scope.fields.splice(i, 1);
-                            break;
+                    if (tableDeleted) {
+
+                        for (var i = 0; i < $scope.fields.length; i++) {
+                            if ($scope.fields[i].table === table.table) {
+                                $scope.fields.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (var i = 0; i < $scope.affichages.length; i++) {
+                            var _table = $scope.affichages[i].field.split(".");
+                            if (_table[0] === table.table) {
+                                $scope.affichages.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (var i = 0; i < $scope.conditions.length; i++) {
+                            var _table = $scope.conditions[i].field.split(".");
+                            if (_table[0] === table.table) {
+                                $scope.conditions.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (var i = 0; i < $scope.groupsBy.length; i++) {
+                            var _table = $scope.groupsBy[i].field.split(".");
+                            if (_table[0] === table.table) {
+                                $scope.groupsBy.splice(i, 1);
+                                break;
+                            }
+                        }
+
+                        for (var i = 0; i < $scope.ordersBy.length; i++) {
+                            var _table = $scope.ordersBy[i].field.split(".");
+                            if (_table[0] === table.table) {
+                                $scope.ordersBy.splice(i, 1);
+                                break;
+                            }
                         }
                     }
 
-                    for (var i = 0; i < $scope.affichages.length; i++) {
-                        var _table = $scope.affichages[i].field.split(".");
-                        if (_table[0] === table.table) {
-                            $scope.affichages.splice(i, 1);
-                            break;
-                        }
-                    }
-
-                    for (var i = 0; i < $scope.conditions.length; i++) {
-                        var _table = $scope.conditions[i].field.split(".");
-                        if (_table[0] === table.table) {
-                            $scope.conditions.splice(i, 1);
-                            break;
-                        }
-                    }
-
-                    for (var i = 0; i < $scope.groupsBy.length; i++) {
-                        var _table = $scope.groupsBy[i].field.split(".");
-                        if (_table[0] === table.table) {
-                            $scope.groupsBy.splice(i, 1);
-                            break;
-                        }
-                    }
-
-                    for (var i = 0; i < $scope.ordersBy.length; i++) {
-                        var _table = $scope.ordersBy[i].field.split(".");
-                        if (_table[0] === table.table) {
-                            $scope.ordersBy.splice(i, 1);
-                            break;
-                        }
-                    }
                 }
 
             }
@@ -842,6 +848,21 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
                 for (var i=0; i < arrLimitsOrdersBy.length; i++) {
                     if ( arrLimitsOrdersBy[i] === Limit) {
                         $scope.limits = [];
+                    }
+                }
+            }
+
+            $scope.deletePaginationRequest = deletePaginationRequest;
+            function deletePaginationRequest(pagination)
+            {
+                // Remove data from DOM
+                var arrPaginations = $.map($scope.paginations, function(el, i) {
+                    return el;
+                });
+
+                for (var i=0; i < arrPaginations.length; i++) {
+                    if ( arrPaginations[i] === pagination) {
+                        $scope.paginations = [];
                     }
                 }
             }

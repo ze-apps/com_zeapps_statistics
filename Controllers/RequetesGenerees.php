@@ -133,7 +133,6 @@ class RequetesGenerees extends Controller
 
         $limit = $request->input('limit', 15);
         $offset = $request->input('offset', 0);
-        $context = $request->input('context', false);
 
         if (strcasecmp($_SERVER['REQUEST_METHOD'], 'post') === 0 && (isset($_SERVER['CONTENT_TYPE']) && stripos($_SERVER['CONTENT_TYPE'], 'application/json') !== FALSE)) {
             // POST is actually in json format, do an internal translation
@@ -310,13 +309,14 @@ class RequetesGenerees extends Controller
          */
         if (count($std_requete->conditions)) {
             foreach ($std_requete->conditions as $condition) {
-                if (strpos('LIKE', $condition->operation)) {
+                if (explode(' ', $condition->operation)[0] == 'LIKE') {
+
                     switch ($condition->operation) {
                         case 'LIKE %valeur' :
                             $requete_finale = $requete_finale->where($condition->field, 'like','%' . $condition->value);
                             break;
                         case 'LIKE valeur%' :
-                            $requete_finale = $requete_finale->where($condition->field, 'like',$condition->value . '%');
+                            $requete_finale = $requete_finale->where($condition->field, 'like', $condition->value . '%');
                             break;
                         case 'LIKE %valeur%' :
                             $requete_finale = $requete_finale->where($condition->field, 'like', '%' . $condition->value . '%');
@@ -324,14 +324,17 @@ class RequetesGenerees extends Controller
                         default :
                             break;
                     }
-                } elseif ($condition->operation === 'IN') {
+
+                } elseif ($condition->operation == 'IN') {
                     $requete_finale = $requete_finale->whereIn($condition->field, is_array($condition->value) ? $condition->value : explode(',', $condition->value));
-                } elseif ($condition->operation === 'BETWEEN') {
+                } elseif ($condition->operation == 'BETWEEN') {
                     if (is_array($condition->value) && sizeof($condition->value) === 2) {
                         $requete_finale = $requete_finale->whereBetween($condition->field, $condition->value);
                     } elseif (!is_array($condition->value) && sizeof(explode(',', $condition->value)) === 2 )  {
                         $requete_finale = $requete_finale->whereBetween($condition->field, explode(',', $condition->value));
                     }
+                } else {
+                    $requete_finale = $requete_finale->where($condition->field, $condition->operation,$condition->value);
                 }
             }
         }

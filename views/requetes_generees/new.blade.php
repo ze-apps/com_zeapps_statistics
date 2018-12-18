@@ -137,7 +137,7 @@
                             id="ajout"
                             fa="plus"
                             color="success open-modalAffichage"
-                            $hint="Ajouter"
+                            hint="Ajouter"
                             always-on="true"
                             href="#modalAffichage"
                             data-toggle="modal"
@@ -356,8 +356,15 @@
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Limit
-                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalLimit" hint="Ajouter" always-on="true"
-                            href="#modalLimit" data-toggle="modal" ></ze-btn>
+                    <ze-btn class="pull-right"
+                            id="ajout"
+                            fa="plus"
+                            color="success open-modalLimit"
+                            hint="Ajouter"
+                            always-on="true"
+                            href="#modalLimit"
+                            data-toggle="modal"
+                            ng-click="editLimit(null)"></ze-btn>
                 </h4>
             </div>
         </div>
@@ -368,6 +375,17 @@
                     <tbody>
                         <tr ng-if="limits.length == 1">
                             <td class="col-md-12">@{{limits[0]}}</td>
+                            <td>
+                                <ze-btn class="pull-right text-info"
+                                        id="edit_limit"
+                                        fa="pencil"
+                                        color="transparent open-modalLimit"
+                                        always-on="true"
+                                        href="#modalLimit"
+                                        data-toggle="modal"
+                                        ng-click="editLimit(limits[0])"
+                                ></ze-btn>
+                            </td>
                             <td>
                                 <span ng-click="deleteLimitRequest(limits[0])" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette limite"></span>
                             </td>
@@ -386,8 +404,15 @@
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
             <div class="col-md-12">
                 <h4 style="border-top: 4px solid #5e5e5e; padding-top: 10px">Pagination
-                    <ze-btn class="pull-right" id="ajout" fa="plus" color="success open-modalPagination" hint="Ajouter" always-on="true"
-                            href="#modalPagination" data-toggle="modal" ></ze-btn>
+                    <ze-btn class="pull-right"
+                            id="ajout"
+                            fa="plus"
+                            color="success open-modalPagination"
+                            hint="Ajouter"
+                            always-on="true"
+                            href="#modalPagination"
+                            data-toggle="modal"
+                            ng-click="editPagination(null)"></ze-btn>
                 </h4>
             </div>
         </div>
@@ -398,6 +423,17 @@
                     <tbody>
                         <tr ng-if="paginations.length == 1">
                             <td class="col-md-12">@{{paginations[0]}}</td>
+                            <td>
+                                <ze-btn class="pull-right text-info"
+                                        id="edit_limit"
+                                        fa="pencil"
+                                        color="transparent open-modalPagination"
+                                        always-on="true"
+                                        href="#modalPagination"
+                                        data-toggle="modal"
+                                        ng-click="editPagination(paginations[0])"
+                                ></ze-btn>
+                            </td>
                             <td>
                                 <span ng-click="deletePaginationRequest(paginations[0])" class="fa fa-close text-danger center-block" style="font-size: 25px; cursor: pointer" title="Supprimer cette pagination"></span>
                             </td>
@@ -554,12 +590,12 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Nouvelle condition
+                    <h4>
+                        Condition
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </h4>
                 </div>
 
                 <div class="modal-body">
@@ -643,12 +679,11 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Nouveau champ de groupement
+                    <h4>Champ(s) de groupement
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </h4>
                 </div>
 
                 <div class="modal-body">
@@ -690,12 +725,11 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Nouveau champ de tri
+                    <h4>Champ(s) de tri
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </h4>
                 </div>
 
                 <div class="modal-body">
@@ -754,12 +788,11 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Limite de sélection
+                    <h4>Limite de sélection
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </h4>
                 </div>
 
                 <div class="modal-body">
@@ -781,7 +814,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" ng-click="addLimit()">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="saveLimit()">Valider</button>
                 </div>
 
             </div>
@@ -799,12 +832,11 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <div id="breadcrumb">
-                        Pagination
+                    <h4>Pagination
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </h4>
                 </div>
 
                 <div class="modal-body">
@@ -830,7 +862,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-success" ng-click="addPagination()">Valider</button>
+                    <button type="button" class="btn btn-success" ng-click="savePagination()">Valider</button>
                 </div>
 
             </div>
