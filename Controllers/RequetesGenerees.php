@@ -13,19 +13,7 @@ class RequetesGenerees extends Controller
 {
     public function context()
     {
-        $tabModel = ModelRequest::getRequestContent();
 
-        $modules = array();
-        foreach ($tabModel as $dataModule) {
-            $std = new \stdClass();
-            $std->id = $dataModule['module_id'];
-            $std->label = $dataModule['module_name'];
-            $modules[] = $std;
-        }
-
-        echo json_encode(array(
-            'modules' => $modules
-        ));
     }
 
     public function getModules()

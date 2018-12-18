@@ -55,18 +55,6 @@ app.controller("ComZeappsRequetesGenereesCtrl", ["$scope", "$routeParams", "$loc
         loadModules();
 
 
-
-
-        /**
-         * Context
-         */
-        zhttp.statistics.requetes_generees.context().then(function (response) {
-            if (response.status == 200) {
-                $scope.modules = response.data.modules;
-            }
-        });
-
-
         // Select table drop-downs
         function loadFields(table, next)
         {
