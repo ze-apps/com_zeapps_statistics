@@ -53,7 +53,7 @@
                         <td>
                             <ze-btn class="pull-right text-info"
                                     id="edit_table"
-                                    fa="pencil"
+                                    fa="edit"
                                     color="transparent open-modalTable"
                                     always-on="true"
                                     href="#modalTable"
@@ -163,7 +163,7 @@
                             <td>
                                 <ze-btn class="pull-right text-info"
                                         id="edit_affichage"
-                                        fa="pencil"
+                                        fa="edit"
                                         color="transparent open-modalAffichage"
                                         always-on="true"
                                         href="#modalAffichage"
@@ -221,7 +221,7 @@
                             <td>
                                 <ze-btn class="pull-right text-info"
                                         id="edit_condition"
-                                        fa="pencil"
+                                        fa="edit"
                                         color="transparent open-modalCondition"
                                         always-on="true"
                                         href="#modalCondition"
@@ -275,7 +275,7 @@
                             <td>
                                 <ze-btn class="pull-right text-info"
                                         id="edit_groupby"
-                                        fa="pencil"
+                                        fa="edit"
                                         color="transparent open-modalGroupePar"
                                         always-on="true"
                                         href="#modalGroupePar"
@@ -330,7 +330,7 @@
                             <td>
                                 <ze-btn class="pull-right text-info"
                                         id="edit_orderby"
-                                        fa="pencil"
+                                        fa="edit"
                                         color="transparent open-modalOrdonnePar"
                                         always-on="true"
                                         href="#modalOrdonnePar"
@@ -378,7 +378,7 @@
                             <td>
                                 <ze-btn class="pull-right text-info"
                                         id="edit_limit"
-                                        fa="pencil"
+                                        fa="edit"
                                         color="transparent open-modalLimit"
                                         always-on="true"
                                         href="#modalLimit"
@@ -426,7 +426,7 @@
                             <td>
                                 <ze-btn class="pull-right text-info"
                                         id="edit_limit"
-                                        fa="pencil"
+                                        fa="edit"
                                         color="transparent open-modalPagination"
                                         always-on="true"
                                         href="#modalPagination"

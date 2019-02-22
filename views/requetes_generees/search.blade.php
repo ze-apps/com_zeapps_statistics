@@ -38,7 +38,7 @@
                         <td>@{{requeteGeneree.created_at || "-" | date:'dd/MM/yyyy'}}</td>
                         <td class="text-left">
                             <button title="Modifier" class="bg-info" ng-click="edit(requeteGeneree.id)" >
-                                <span class="fa fa-pencil"></span>
+                                <span class="fas fa-edit"></span>
                             </button>
                             <button title="Exécuter" class="bg-primary" ng-click="execute(requeteGeneree)">
                                 <span class="fa fa-spinner"></span>
