@@ -11,7 +11,7 @@ $tabMenu["space"] = "com_zeapps_statistics" ;
 $tabMenu["label"] = "Liste des requetes" ;
 $tabMenu["fa-icon"] = "database" ;
 $tabMenu["url"] = "/ng/com_zeapps_statistics/requetes_generees" ;
-$tabMenu["access"] = "com_zeapps_contact_read" ;
+$tabMenu["access"] = "com_zeapps_statistics_read" ;
 $tabMenu["order"] = 0 ;
 $menuLeft[] = $tabMenu ;
 
@@ -21,7 +21,7 @@ $tabMenu["space"] = "com_zeapps_statistics" ;
 $tabMenu["label"] = "Nouvelle requête";
 $tabMenu["fa-icon"] = "plus" ;
 $tabMenu["url"] = "/ng/com_zeapps_statistics/requetes_generees/new" ;
-$tabMenu["access"] = "com_zeapps_contact_read" ;
+$tabMenu["access"] = "com_zeapps_statistics_read" ;
 $tabMenu["order"] = 0 ;
 $menuLeft[] = $tabMenu ;*/
 
@@ -33,7 +33,7 @@ $tabMenu["space"] = "com_zeapps_statistics" ;
 $tabMenu["label"] = "Liste des requetes" ;
 $tabMenu["fa-icon"] = "database" ;
 $tabMenu["url"] = "/ng/com_zeapps_statistics/requetes_generees" ;
-$tabMenu["access"] = "com_zeapps_contact_read" ;
+$tabMenu["access"] = "com_zeapps_statistics_read" ;
 $tabMenu["order"] = 0 ;
 $menuHeader[] = $tabMenu ;
 
@@ -43,6 +43,6 @@ $tabMenu["space"] = "com_zeapps_statistics" ;
 $tabMenu["label"] = "Nouvelle requête";
 $tabMenu["fa-icon"] = "plus" ;
 $tabMenu["url"] = "/ng/com_zeapps_statistics/requetes_generees/new" ;
-$tabMenu["access"] = "com_zeapps_contact_read" ;
+$tabMenu["access"] = "com_zeapps_statistics_read" ;
 $tabMenu["order"] = 0 ;
 $menuHeader[] = $tabMenu ;*/
