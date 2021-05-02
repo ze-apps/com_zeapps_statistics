@@ -35,7 +35,7 @@
                         <td>@{{requeteGeneree.id}}</td>
                         <td>@{{requeteGeneree.nom_requete}}</td>
                         {{--<td>@{{requeteGeneree.contenu}}</td>--}}
-                        <td>@{{requeteGeneree.created_at || "-" | date:'dd/MM/yyyy'}}</td>
+                        <td>@{{requeteGeneree.created_at | dateConvert:'date' }}</td>
                         <td class="text-left">
                             <button title="Modifier" class="bg-info" ng-click="edit(requeteGeneree.id)" >
                                 <span class="fas fa-edit"></span>
